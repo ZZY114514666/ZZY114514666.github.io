@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="zh">
+<!DOCTYPE html>
+<html lang="zh">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -10,94 +11,76 @@
       box-sizing: border-box;
       font-family: '微软雅黑', sans-serif;
     }
-    body, html {
+
+    html, body {
       height: 100%;
       overflow: hidden;
     }
-    body {
-      position: relative;
-    }
-    video#bgvid {
+
+    #bg-video {
       position: fixed;
-      right: 0;
-      bottom: 0;
+      top: 0;
+      left: 0;
       min-width: 100%;
       min-height: 100%;
-      z-index: -1;
       object-fit: cover;
+      z-index: -1;
     }
-    .container {
+
+    .content {
       position: relative;
       z-index: 1;
-      height: 100%;
-      width: 100%;
-      background: rgba(0,0,0,0.5);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
       text-align: center;
-      padding: 20px;
-      color: #fff;
-    }
-    .avatar {
-      width: 100px;
-      height: 100px;
-      border-radius: 50%;
-      margin-bottom: 20px;
-      border: 3px solid #fff;
-      background-size: cover;
-      background-position: center;
-    }
-    h1 {
-      font-size: 2.2rem;
-      margin-bottom: 10px;
-      font-weight: bold;
-    }
-    p {
-      font-size: 1.1rem;
-      margin: 4px 0;
-    }
-    .btn {
-      margin-top: 16px;
-      background: #6a5acd;
-      border: none;
-      padding: 12px 25px;
-      border-radius: 25px;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      text-decoration: none;
-      display: inline-block;
       color: white;
+      padding: 20% 10px 0;
+      text-shadow: 2px 2px 8px black;
     }
-    .btn:hover {
-      background: #836fff;
+
+    .content h1 {
+      font-size: 32px;
+      margin-bottom: 12px;
     }
-    .linkbox {
-      margin-top: 30px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
+
+    .content p {
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+
+    .button {
+      display: block;
+      margin: 12px auto;
+      padding: 12px 24px;
+      background-color: rgba(0,0,0,0.6);
+      color: white;
+      border-radius: 10px;
+      text-decoration: none;
+      font-size: 16px;
       width: 80%;
-      max-width: 350px;
+      max-width: 300px;
+    }
+
+    .button:hover {
+      background-color: rgba(255,255,255,0.2);
     }
   </style>
 </head>
-<body>  <video id="bgvid" autoplay muted loop playsinline>
-    <source src="background.mp4" type="video/mp4" />
-    您的浏览器不支持视频背景。
-  </video>  <div class="container">
-    <div class="avatar" style="background-image: url('https://i.imgur.com/IrOqiJa.jpg');"></div>
-    <h1>西海开盒查档</h1>
-    <p>专业查档（有合作）</p>
-    <p>飞机免费上</p>
-    <p>实在不会再收费</p>
-    <p>进群送社工库</p>
-    <p>QQ群：1027133752</p><div class="linkbox">
-  <a class="btn" href="https://your-download-link.com" target="_blank">下载工具（点击）</a>
-  <a class="btn" href="https://qm.qq.com/cgi-bin/qm/qr?k=群二维码" target="_blank">加入交流群</a>
-</div>
+<body>
 
-  </div></body>
+  <!-- 背景视频 -->
+  <video id="bg-video" autoplay muted loop>
+    <source src="云5.mp4" type="video/mp4">
+    您的浏览器不支持 HTML5 视频标签。
+  </video>
+
+  <!-- 页面内容 -->
+  <div class="content">
+    <h1>西海开盒查档</h1>
+    <p>专业查档（有合作）<br>飞机免费上<br>实在不会再收费<br>进群送社工库<br>QQ群：1027133752</p>
+
+    <a class="button" href="#">购买低价卡密（点击）</a>
+    <a class="button" href="#">下载开户社工（点击）</a>
+    <a class="button" href="#">进入开户交流群【请先进群】</a>
+  </div>
+
+</body>
 </html>
