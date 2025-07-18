@@ -1,23 +1,21 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>西海开盒查档</title>
   <style>
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: '微软雅黑', sans-serif;
+      font-family: 'Microsoft YaHei', sans-serif;
     }
-
-    html, body {
+    body, html {
       height: 100%;
       overflow: hidden;
     }
-
-    #bg-video {
+    video.bg-video {
       position: fixed;
       top: 0;
       left: 0;
@@ -26,61 +24,57 @@
       object-fit: cover;
       z-index: -1;
     }
-
     .content {
-      position: relative;
-      z-index: 1;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0,0,0,0.6);
+      border-radius: 12px;
+      padding: 20px 30px;
       text-align: center;
       color: white;
-      padding: 20% 10px 0;
-      text-shadow: 2px 2px 8px black;
+      box-shadow: 0 0 20px #00ffff;
     }
-
     .content h1 {
-      font-size: 32px;
-      margin-bottom: 12px;
+      font-size: 24px;
+      margin-bottom: 10px;
     }
-
     .content p {
-      font-size: 18px;
-      margin-bottom: 20px;
-    }
-
-    .button {
-      display: block;
-      margin: 12px auto;
-      padding: 12px 24px;
-      background-color: rgba(0,0,0,0.6);
-      color: white;
-      border-radius: 10px;
-      text-decoration: none;
+      margin: 5px 0;
       font-size: 16px;
-      width: 80%;
-      max-width: 300px;
     }
-
-    .button:hover {
-      background-color: rgba(255,255,255,0.2);
+    .btn {
+      display: inline-block;
+      margin-top: 15px;
+      padding: 10px 20px;
+      background: #00ffff;
+      color: black;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .btn:hover {
+      background: #00dddd;
     }
   </style>
 </head>
 <body>
 
-  <!-- 背景视频 -->
-  <video id="bg-video" autoplay muted loop>
-    <source src="云5.mp4" type="video/mp4">
-    您的浏览器不支持 HTML5 视频标签。
-  </video>
+<video class="bg-video" autoplay muted loop>
+  <source src="云5.mp4" type="video/mp4">
+  您的浏览器不支持 HTML5 视频标签。
+</video>
 
-  <!-- 页面内容 -->
-  <div class="content">
-    <h1>西海开盒查档</h1>
-    <p>专业查档（有合作）<br>飞机免费上<br>实在不会再收费<br>进群送社工库<br>QQ群：1027133752</p>
-
-    <a class="button" href="#">购买低价卡密（点击）</a>
-    <a class="button" href="#">下载开户社工（点击）</a>
-    <a class="button" href="#">进入开户交流群【请先进群】</a>
-  </div>
+<div class="content">
+  <h1>西海开盒查档</h1>
+  <p>专业查档（有合作）</p>
+  <p>飞机免费上</p>
+  <p>实在不会再收费</p>
+  <p>进群送社工库</p>
+  <p>QQ群号：1027133752</p>
+  <a class="btn" href="https://jq.qq.com/?_wv=1027&k=0xZODFjw" target="_blank">点击加入 QQ 群</a>
+</div>
 
 </body>
 </html>
