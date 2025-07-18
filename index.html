@@ -1,73 +1,103 @@
-<!DOCTYPE html>
-<html lang="zh">
+<!DOCTYPE html><html lang="zh">
 <head>
-  <meta charset="UTF-8">
-  <title>欢迎使用</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>西海开盒查档</title>
   <style>
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
+      font-family: '微软雅黑', sans-serif;
     }
-
+    body, html {
+      height: 100%;
+      overflow: hidden;
+    }
     body {
-      background-image: url('https://images.unsplash.com/photo-1626785774573-4b799315345b?auto=format&fit=crop&w=1400&q=80');
+      position: relative;
+    }
+    video#bgvid {
+      position: fixed;
+      right: 0;
+      bottom: 0;
+      min-width: 100%;
+      min-height: 100%;
+      z-index: -1;
+      object-fit: cover;
+    }
+    .container {
+      position: relative;
+      z-index: 1;
+      height: 100%;
+      width: 100%;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 20px;
+      color: #fff;
+    }
+    .avatar {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      margin-bottom: 20px;
+      border: 3px solid #fff;
       background-size: cover;
       background-position: center;
-      font-family: 'Arial', sans-serif;
-      color: #fff;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
     }
-
-    .container {
-      background: rgba(0, 0, 0, 0.65);
-      padding: 40px 30px;
-      border-radius: 16px;
-      text-align: center;
-      box-shadow: 0 0 20px rgba(0,255,255,0.3);
-      max-width: 90%;
-      width: 400px;
-    }
-
     h1 {
-      font-size: 32px;
-      margin-bottom: 16px;
-    }
-
-    p {
-      font-size: 18px;
-      margin: 10px 0;
-    }
-
-    .btn {
-      display: inline-block;
-      margin-top: 24px;
-      padding: 14px 28px;
-      background-color: #00ffff;
-      color: #000;
-      text-decoration: none;
+      font-size: 2.2rem;
+      margin-bottom: 10px;
       font-weight: bold;
-      font-size: 16px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px #00ffff;
-      transition: 0.3s;
     }
-
+    p {
+      font-size: 1.1rem;
+      margin: 4px 0;
+    }
+    .btn {
+      margin-top: 16px;
+      background: #6a5acd;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 25px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+      color: white;
+    }
     .btn:hover {
-      background-color: #00d9d9;
-      box-shadow: 0 0 20px #00ffff;
+      background: #836fff;
+    }
+    .linkbox {
+      margin-top: 30px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: 80%;
+      max-width: 350px;
     }
   </style>
 </head>
-<body>
-  <div class="container">
-    <h1>欢迎使用</h1>
-    <p>需要进群 <strong>1027133752</strong></p>
-    <p style="color:#ccc;">拒绝圈钱</p>
-    <a href="https://qm.qq.com/cgi-bin/qm/qr?k=9d98BBKxYtKtTyUkpMowHFVzyGGH7eK_" target="_blank" class="btn">点击加入 QQ 群</a>
-  </div>
-</body>
+<body>  <video id="bgvid" autoplay muted loop playsinline>
+    <source src="background.mp4" type="video/mp4" />
+    您的浏览器不支持视频背景。
+  </video>  <div class="container">
+    <div class="avatar" style="background-image: url('https://i.imgur.com/IrOqiJa.jpg');"></div>
+    <h1>西海开盒查档</h1>
+    <p>专业查档（有合作）</p>
+    <p>飞机免费上</p>
+    <p>实在不会再收费</p>
+    <p>进群送社工库</p>
+    <p>QQ群：1027133752</p><div class="linkbox">
+  <a class="btn" href="https://your-download-link.com" target="_blank">下载工具（点击）</a>
+  <a class="btn" href="https://qm.qq.com/cgi-bin/qm/qr?k=群二维码" target="_blank">加入交流群</a>
+</div>
+
+  </div></body>
 </html>
