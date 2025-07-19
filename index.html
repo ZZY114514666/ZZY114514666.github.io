@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>西海开盒查档</title>
   <style>
     * {
@@ -12,6 +12,12 @@
       font-family: "Microsoft YaHei", "Segoe UI", sans-serif;
     }
 
+    :root {
+      --primary: #009688;
+      --primary-dark: #00796b;
+      --card-bg: rgba(20, 20, 30, 0.9);
+    }
+
     html, body {
       height: 100%;
       color: white;
@@ -19,22 +25,20 @@
       background: black;
     }
 
+    /* 背景视频样式 */
     .bg-video {
       position: fixed;
-      top: 0; left: 0;
-      width: 100vw;
-      height: 100vh;
+      right: 0;
+      bottom: 0;
+      min-width: 100%;
+      min-height: 100%;
       object-fit: cover;
       z-index: -1;
-    }
-
-    /* 隐藏视频控件 */
-    .bg-video::-webkit-media-controls {
-      display: none !important;
+      filter: blur(3px) brightness(0.7);
     }
 
     .overlay {
-      background-color: rgba(0, 0, 0, 0.7);
+      background-color: rgba(0, 0, 0, 0.6);
       backdrop-filter: blur(8px);
       min-height: 100vh;
       padding: 40px 20px;
@@ -46,7 +50,7 @@
     }
 
     .card {
-      background: rgba(20, 20, 30, 0.9);
+      background: var(--card-bg);
       border-radius: 12px;
       padding: 25px;
       margin-bottom: 25px;
@@ -79,7 +83,7 @@
       display: block;
       width: 100%;
       padding: 14px 0;
-      background: linear-gradient(135deg, #009688, #00796b);
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
       border: none;
       border-radius: 8px;
       font-size: 16px;
@@ -93,7 +97,7 @@
     }
 
     .btn:hover {
-      background: linear-gradient(135deg, #00796b, #009688);
+      background: linear-gradient(135deg, var(--primary-dark), var(--primary));
       box-shadow: 0 6px 20px rgba(0, 150, 136, 0.6);
     }
 
@@ -113,9 +117,11 @@
       .card {
         padding: 20px;
       }
+
       .title {
         font-size: 20px;
       }
+
       .btn {
         padding: 12px 0;
         font-size: 15px;
@@ -124,10 +130,9 @@
   </style>
 </head>
 <body>
-
-  <!-- 背景视频，控件已完全隐藏 -->
-  <video class="bg-video" autoplay muted loop playsinline controlslist="nodownload nofullscreen noremoteplayback" disablepictureinpicture>
-    <source src="云5.mp4" type="video/mp4">
+  <!-- 背景视频（使用 jsDelivr 加速） -->
+  <video autoplay muted loop playsinline class="bg-video">
+    <source src="https://cdn.jsdelivr.net/gh/ZZY114514666/ZZY/云5.mp4" type="video/mp4" />
   </video>
 
   <div class="overlay">
@@ -150,11 +155,10 @@
 
       <div class="card">
         <div class="title">截图演示</div>
-        <img class="preview" src="IMG_20250719_1.JPG" alt="截图1" />
-        <img class="preview" src="IMG_20250719_2.JPG" alt="截图2" />
+        <img class="preview" src="https://cdn.jsdelivr.net/gh/ZZY114514666/ZZY/IMG_20250719_1.JPG" alt="截图1" />
+        <img class="preview" src="https://cdn.jsdelivr.net/gh/ZZY114514666/ZZY/IMG_20250719_2.JPG" alt="截图2" />
       </div>
     </div>
   </div>
-
 </body>
 </html>
