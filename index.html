@@ -1,98 +1,68 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
   <title>西海开盒查档</title>
   <style>
     body {
       margin: 0;
-      font-family: sans-serif;
-      background-color: #000; /* 纯黑背景 */
-      color: #fff;
-    }
-
-    .container {
-      padding: 20px;
-    }
-
-    .card {
-      background-color: #111827;
-      border-radius: 20px;
-      padding: 20px;
-      margin-bottom: 20px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-    }
-
-    .title {
-      text-align: center;
-      font-size: 24px;
-      font-weight: bold;
-      color: #34d399;
-    }
-
-    .btn {
-      display: block;
-      margin: 20px auto;
-      padding: 12px 24px;
-      background-color: #059669;
+      padding: 0;
+      font-family: "微软雅黑", sans-serif;
+      background: linear-gradient(to bottom, #0f2027, #203a43, #2c5364); /* 渐变背景 */
       color: white;
-      border: none;
-      border-radius: 10px;
-      font-size: 18px;
-      cursor: pointer;
-    }
-
-    .btn:hover {
-      background-color: #047857;
-    }
-
-    .desc {
-      text-align: center;
-      margin-top: 10px;
-      font-size: 16px;
-      color: #cbd5e1;
-    }
-
-    .image-preview {
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      margin-top: 15px;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
     }
 
-    .image-preview img {
-      width: 100%;
+    h1 {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+    }
+
+    p {
+      font-size: 1.2em;
+      margin-bottom: 30px;
+    }
+
+    button {
+      background-color: #00b894;
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      font-size: 18px;
       border-radius: 10px;
-      border: 1px solid #444;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #019875;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="card">
-      <div class="title">西海开盒查档</div>
-      <button class="btn">点击加入 QQ 群</button>
-      <div class="desc">进群送社工库<br/>QQ群号：1027133752</div>
-    </div>
+  <h1>西海开盒查档</h1>
+  <p>点击下方按钮播放音乐并开始体验</p>
+  <button onclick="playMusic()">播放音乐</button>
 
-    <div class="card">
-      <div class="title">支持全平台查档</div>
-      <div class="desc">快速响应 ｜ 专业解答</div>
-    </div>
+  <!-- 音频播放器（loop + autoplay） -->
+  <audio id="bgMusic" loop>
+    <source src="https://cdn.statically.io/gh/ZZY114514666/ZZY114514666.github.io/main/Sea_breeze(Phonk)-DJ小蒋-450529779-100(1).mp3" type="audio/mpeg">
+    您的浏览器不支持音频播放。
+  </audio>
 
-    <div class="card">
-      <div class="title">安全保障</div>
-      <div class="desc">绝不二次收费 ｜ 隐私保护</div>
-    </div>
-
-    <div class="card">
-      <div class="title">截图演示</div>
-      <div class="image-preview">
-        <img src="https://i.imgs.ovh/2025/07/19/MzBox.jpeg" alt="截图1">
-        <img src="https://i.imgs.ovh/2025/07/19/MAPix.jpeg" alt="截图2">
-      </div>
-    </div>
-  </div>
+  <script>
+    function playMusic() {
+      const audio = document.getElementById("bgMusic");
+      audio.play().catch((err) => {
+        alert("自动播放失败，请手动允许音频播放");
+        console.error(err);
+      });
+    }
+  </script>
 </body>
 </html>
