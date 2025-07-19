@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>西海开盒查档</title>
   <style>
     * {
@@ -11,34 +11,42 @@
       box-sizing: border-box;
       font-family: "Microsoft YaHei", "Segoe UI", sans-serif;
     }
-    
-    :root {
-      --primary: #009688;
-      --primary-dark: #00796b;
-      --card-bg: rgba(20, 20, 30, 0.9);
-    }
-    
+
     html, body {
       height: 100%;
       color: white;
       overflow-x: hidden;
-      background: linear-gradient(135deg, #1a1a2e, #16213e);
     }
-    
+
+    body {
+      position: relative;
+      background: black;
+    }
+
+    /* 背景视频样式 */
+    .bg-video {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+      z-index: -1;
+    }
+
     .overlay {
       background-color: rgba(0, 0, 0, 0.7);
       backdrop-filter: blur(8px);
       min-height: 100vh;
       padding: 40px 20px;
     }
-    
+
     .container {
       max-width: 600px;
       margin: 0 auto;
     }
-    
+
     .card {
-      background: var(--card-bg);
+      background: rgba(20, 20, 30, 0.9);
       border-radius: 12px;
       padding: 25px;
       margin-bottom: 25px;
@@ -46,12 +54,12 @@
       transition: transform 0.3s ease, box-shadow 0.3s ease;
       border: 1px solid rgba(255, 255, 255, 0.05);
     }
-    
+
     .card:hover {
       transform: translateY(-5px);
       box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
     }
-    
+
     .title {
       font-size: 22px;
       font-weight: bold;
@@ -59,19 +67,19 @@
       text-align: center;
       color: #4db6ac;
     }
-    
+
     .desc {
       text-align: center;
       color: #b0bec5;
       font-size: 15px;
       line-height: 1.6;
     }
-    
+
     .btn {
       display: block;
       width: 100%;
       padding: 14px 0;
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      background: linear-gradient(135deg, #009688, #00796b);
       border: none;
       border-radius: 8px;
       font-size: 16px;
@@ -83,12 +91,12 @@
       transition: all 0.3s;
       box-shadow: 0 4px 15px rgba(0, 150, 136, 0.4);
     }
-    
+
     .btn:hover {
-      background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+      background: linear-gradient(135deg, #00796b, #009688);
       box-shadow: 0 6px 20px rgba(0, 150, 136, 0.6);
     }
-    
+
     .preview {
       width: 100%;
       border-radius: 10px;
@@ -96,20 +104,18 @@
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
       transition: transform 0.3s ease;
     }
-    
+
     .preview:hover {
       transform: scale(1.02);
     }
-    
+
     @media (max-width: 480px) {
       .card {
         padding: 20px;
       }
-      
       .title {
         font-size: 20px;
       }
-      
       .btn {
         padding: 12px 0;
         font-size: 15px;
@@ -118,6 +124,14 @@
   </style>
 </head>
 <body>
+
+  <!-- 背景视频 -->
+  <video class="bg-video" autoplay muted loop playsinline>
+    <source src="https://raw.githubusercontent.com/ZZY114514666/ZZY/main/云5.mp4" type="video/mp4">
+    您的浏览器不支持 video 标签。
+  </video>
+
+  <!-- 内容 -->
   <div class="overlay">
     <div class="container">
       <div class="card">
@@ -136,13 +150,13 @@
         <div class="desc">绝不二次收费 ｜ 隐私保护</div>
       </div>
 
-      <!-- 演示插入图片 -->
       <div class="card">
         <div class="title">截图演示</div>
-        <img class="preview" src="你的图片链接1.jpg" alt="截图1" />
-        <img class="preview" src="你的图片链接2.jpg" alt="截图2" />
+        <img class="preview" src="IMG_20250719_1.jpg" alt="截图1" />
+        <img class="preview" src="IMG_20250719_2.jpg" alt="截图2" />
       </div>
     </div>
   </div>
+
 </body>
 </html>
