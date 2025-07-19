@@ -19,7 +19,15 @@ html, body {
   height: 100%;
   color: white;
   overflow-x: hidden;
-  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  background: linear-gradient(270deg, red, orange, yellow, green, cyan, blue, violet);
+  background-size: 1400% 1400%;
+  animation: rainbow 30s ease infinite;
+}
+
+@keyframes rainbow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 .overlay {
