@@ -16,14 +16,9 @@
       height: 100%;
       color: white;
       overflow-x: hidden;
-    }
-
-    body {
-      position: relative;
       background: black;
     }
 
-    /* 背景视频样式 */
     .bg-video {
       position: fixed;
       top: 0; left: 0;
@@ -31,6 +26,11 @@
       height: 100vh;
       object-fit: cover;
       z-index: -1;
+    }
+
+    /* 隐藏视频控件 */
+    .bg-video::-webkit-media-controls {
+      display: none !important;
     }
 
     .overlay {
@@ -125,8 +125,8 @@
 </head>
 <body>
 
-  <!-- ✅ 视频背景（现在可以用相对路径） -->
-  <video class="bg-video" autoplay muted loop playsinline>
+  <!-- 背景视频，控件已完全隐藏 -->
+  <video class="bg-video" autoplay muted loop playsinline controlslist="nodownload nofullscreen noremoteplayback" disablepictureinpicture>
     <source src="云5.mp4" type="video/mp4">
   </video>
 
@@ -150,8 +150,8 @@
 
       <div class="card">
         <div class="title">截图演示</div>
-        <img class="preview" src="IMG_20250719_131640.jpg" alt="截图1" />
-        <img class="preview" src="IMG_20250719_131802.jpg" alt="截图2" />
+        <img class="preview" src="IMG_20250719_1.JPG" alt="截图1" />
+        <img class="preview" src="IMG_20250719_2.JPG" alt="截图2" />
       </div>
     </div>
   </div>
