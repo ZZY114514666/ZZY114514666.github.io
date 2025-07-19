@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>西海开盒查档</title>
   <style>
     * {
@@ -12,9 +12,11 @@
       font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
     }
 
-    body, html {
+    html, body {
       height: 100%;
-      overflow-x: hidden;
+      overflow: hidden;
+      background-color: #111;
+      color: white;
     }
 
     video.bg-video {
@@ -25,130 +27,195 @@
       min-height: 100%;
       object-fit: cover;
       z-index: -1;
+      filter: brightness(0.4);
     }
 
     .container {
-      padding: 40px 20px;
-      text-align: center;
-      color: white;
-    }
-
-    .title {
-      font-size: 36px;
-      color: white;
-      text-shadow: 0 0 10px #00ffff;
-      margin-bottom: 10px;
-    }
-
-    .desc {
-      font-size: 18px;
-      margin-bottom: 30px;
-      text-shadow: 0 0 5px black;
-    }
-
-    .group {
-      margin-bottom: 30px;
-    }
-
-    .scroll-gallery {
       display: flex;
-      overflow-x: auto;
-      gap: 16px;
-      padding: 10px;
-      scroll-snap-type: x mandatory;
+      height: 100%;
+      opacity: 0;
+      transition: opacity 1s ease;
+    }
+
+    .sidebar {
+      width: 8px;
+      background-color: #00ffff;
+      border-radius: 10px;
+      margin-right: 8px;
+    }
+
+    .gallery {
+      flex: 1;
+      overflow-y: auto;
+      padding: 30px 20px;
+      scrollbar-color: #00ffff #222;
+      scrollbar-width: thin;
     }
 
     .card {
-      background-color: rgba(255, 255, 255, 0.1);
+      background: rgba(20, 20, 20, 0.8);
       border-radius: 16px;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
-      min-width: 280px;
-      max-width: 280px;
-      flex-shrink: 0;
-      scroll-snap-align: start;
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+      backdrop-filter: blur(12px);
+      margin-bottom: 24px;
+      overflow: hidden;
+      transition: transform 0.2s;
+    }
+
+    .card:hover {
+      transform: scale(1.01);
     }
 
     .card img {
       width: 100%;
-      height: 160px;
-      object-fit: cover;
-      border-top-left-radius: 16px;
-      border-top-right-radius: 16px;
+      height: auto;
+      display: block;
+      cursor: pointer;
     }
 
     .card-body {
-      padding: 15px;
+      padding: 16px;
     }
 
     .card-body p {
-      margin: 5px 0;
-      font-size: 16px;
+      margin: 8px 0;
+      font-size: 15px;
+      line-height: 1.4;
     }
 
     .btn {
+      display: inline-block;
       margin-top: 10px;
-      padding: 10px 16px;
+      padding: 10px 20px;
       background: #00ffff;
       color: black;
-      font-weight: bold;
-      text-decoration: none;
       border-radius: 8px;
-      display: inline-block;
-      transition: 0.3s;
+      text-decoration: none;
+      font-weight: bold;
     }
 
     .btn:hover {
       background: #00dddd;
     }
 
-    /* 隐藏滚动条 */
-    .scroll-gallery::-webkit-scrollbar {
+    /* 图片预览 */
+    .preview {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
       display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+    }
+
+    .preview img {
+      max-width: 90%;
+      max-height: 90%;
+      border-radius: 12px;
+      box-shadow: 0 0 30px #00ffff;
+    }
+
+    /* 加载动画 */
+    #loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: black;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+      transition: opacity 0.8s ease;
+    }
+
+    .loader {
+      width: 60px;
+      height: 60px;
+      border: 6px solid #00ffff;
+      border-top: 6px solid transparent;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
     }
   </style>
 </head>
 <body>
 
+  <!-- 背景视频 -->
   <video class="bg-video" autoplay muted loop>
     <source src="云5.mp4" type="video/mp4">
-    您的浏览器不支持 HTML5 视频标签。
   </video>
 
-  <div class="container">
-    <div class="title">西海开盒查档</div>
-    <div class="desc">专业查档（有合作）｜飞机免费上｜实在不会再收费</div>
+  <!-- 加载动画 -->
+  <div id="loading-screen">
+    <div class="loader"></div>
+  </div>
 
-    <div class="group">
-      <div class="scroll-gallery">
-        <!-- 卡片 1 -->
-        <div class="card">
-          <img src="img1.jpg" alt="图片1">
-          <div class="card-body">
-            <p>进群送社工库</p>
-            <p>QQ群号：1027133752</p>
-            <a class="btn" href="https://jq.qq.com/?_wv=1027&k=0xZODFjw" target="_blank">加入QQ群</a>
-          </div>
+  <!-- 主内容 -->
+  <div class="container" id="main-content">
+    <div class="sidebar"></div>
+
+    <div class="gallery">
+      <div class="card">
+        <img src="img1.jpg" alt="展示图1" onclick="preview(this)">
+        <div class="card-body">
+          <p>进群送社工库</p>
+          <p>QQ群号：1027133752</p>
+          <a class="btn" href="https://jq.qq.com/?_wv=1027&k=0xZODFjw" target="_blank">点击加入 QQ 群</a>
         </div>
-        <!-- 卡片 2 -->
-        <div class="card">
-          <img src="img2.jpg" alt="图片2">
-          <div class="card-body">
-            <p>支持全平台查档</p>
-            <p>快速响应｜专业解答</p>
-          </div>
+      </div>
+
+      <div class="card">
+        <img src="img2.jpg" alt="展示图2" onclick="preview(this)">
+        <div class="card-body">
+          <p>支持全平台查档</p>
+          <p>快速响应｜专业解答</p>
         </div>
-        <!-- 卡片 3 -->
-        <div class="card">
-          <img src="img3.jpg" alt="图片3">
-          <div class="card-body">
-            <p>安全保障｜绝不二次收费</p>
-          </div>
+      </div>
+
+      <div class="card">
+        <img src="img3.jpg" alt="展示图3" onclick="preview(this)">
+        <div class="card-body">
+          <p>安全保障｜绝不二次收费</p>
         </div>
-        <!-- 更多图片可继续添加 -->
       </div>
     </div>
   </div>
+
+  <!-- 放大预览 -->
+  <div class="preview" id="preview" onclick="this.style.display='none'">
+    <img id="preview-img" src="">
+  </div>
+
+  <script>
+    // 图片点击放大
+    function preview(img) {
+      const box = document.getElementById('preview');
+      const bigImg = document.getElementById('preview-img');
+      bigImg.src = img.src;
+      box.style.display = 'flex';
+    }
+
+    // 页面加载完成后处理
+    window.onload = function () {
+      const loading = document.getElementById('loading-screen');
+      const content = document.getElementById('main-content');
+      loading.style.opacity = '0';
+      setTimeout(() => {
+        loading.style.display = 'none';
+        content.style.opacity = '1';
+      }, 800);
+    };
+  </script>
 
 </body>
 </html>
