@@ -9,14 +9,16 @@
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+      font-family: 'Microsoft YaHei', sans-serif;
     }
 
     html, body {
       height: 100%;
       overflow: hidden;
-      background-color: #111;
-      color: white;
+    }
+
+    body {
+      background: #000;
     }
 
     video.bg-video {
@@ -27,195 +29,149 @@
       min-height: 100%;
       object-fit: cover;
       z-index: -1;
-      filter: brightness(0.4);
+      opacity: 0.8;
     }
 
     .container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      overflow-y: auto;
+      padding: 30px 0;
       display: flex;
-      height: 100%;
-      opacity: 0;
-      transition: opacity 1s ease;
+      flex-direction: column;
+      align-items: center;
+      scroll-behavior: smooth;
     }
 
-    .sidebar {
-      width: 8px;
+    .scrollbar::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .scrollbar::-webkit-scrollbar-thumb {
       background-color: #00ffff;
       border-radius: 10px;
-      margin-right: 8px;
-    }
-
-    .gallery {
-      flex: 1;
-      overflow-y: auto;
-      padding: 30px 20px;
-      scrollbar-color: #00ffff #222;
-      scrollbar-width: thin;
     }
 
     .card {
-      background: rgba(20, 20, 20, 0.8);
-      border-radius: 16px;
-      box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
-      backdrop-filter: blur(12px);
-      margin-bottom: 24px;
-      overflow: hidden;
-      transition: transform 0.2s;
+      width: 320px;
+      background: rgba(10,10,10,0.85);
+      border-radius: 15px;
+      box-shadow: 0 0 25px #00ffff88;
+      margin: 20px 0;
+      padding: 20px;
+      color: white;
+      text-align: center;
+      animation: fadeIn 1.2s ease;
     }
 
-    .card:hover {
-      transform: scale(1.01);
+    .card h1 {
+      font-size: 22px;
+      margin-bottom: 8px;
     }
 
-    .card img {
-      width: 100%;
-      height: auto;
-      display: block;
-      cursor: pointer;
-    }
-
-    .card-body {
-      padding: 16px;
-    }
-
-    .card-body p {
-      margin: 8px 0;
-      font-size: 15px;
-      line-height: 1.4;
-    }
-
-    .btn {
+    .btn-qq {
       display: inline-block;
       margin-top: 10px;
-      padding: 10px 20px;
+      padding: 8px 16px;
       background: #00ffff;
       color: black;
       border-radius: 8px;
       text-decoration: none;
       font-weight: bold;
+      font-size: 14px;
+      transition: 0.3s;
     }
 
-    .btn:hover {
+    .btn-qq:hover {
       background: #00dddd;
     }
 
-    /* 图片预览 */
-    .preview {
+    .card p {
+      margin-top: 10px;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .card img {
+      width: 100%;
+      border-radius: 10px;
+      margin-top: 10px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .card img:hover {
+      transform: scale(1.02);
+      box-shadow: 0 0 10px #00ffff99;
+    }
+
+    /* 大图预览 */
+    #preview {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.8);
+      background: rgba(0,0,0,0.9);
       display: none;
-      align-items: center;
       justify-content: center;
-      z-index: 10;
+      align-items: center;
+      z-index: 999;
     }
 
-    .preview img {
+    #preview img {
       max-width: 90%;
       max-height: 90%;
-      border-radius: 12px;
-      box-shadow: 0 0 30px #00ffff;
+      border-radius: 10px;
     }
 
-    /* 加载动画 */
-    #loading-screen {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: black;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 999;
-      transition: opacity 0.8s ease;
-    }
-
-    .loader {
-      width: 60px;
-      height: 60px;
-      border: 6px solid #00ffff;
-      border-top: 6px solid transparent;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: translateY(30px); }
+      100% { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
 <body>
-
-  <!-- 背景视频 -->
   <video class="bg-video" autoplay muted loop>
     <source src="云5.mp4" type="video/mp4">
+    您的浏览器不支持 HTML5 视频标签。
   </video>
 
-  <!-- 加载动画 -->
-  <div id="loading-screen">
-    <div class="loader"></div>
-  </div>
+  <div class="container scrollbar">
+    <div class="card">
+      <h1>西海开盒查档</h1>
+      <a class="btn-qq" href="https://jq.qq.com/?_wv=1027&k=0xZODFjw" target="_blank">点击加入 QQ 群</a>
+      <p>进群送社工库<br>QQ群号：1027133752</p>
+      <img src="img1.jpg" onclick="preview(this.src)" />
+    </div>
 
-  <!-- 主内容 -->
-  <div class="container" id="main-content">
-    <div class="sidebar"></div>
+    <div class="card">
+      <h1>支持全平台查档</h1>
+      <p>快速响应 ｜ 专业解答</p>
+      <img src="img2.jpg" onclick="preview(this.src)" />
+    </div>
 
-    <div class="gallery">
-      <div class="card">
-        <img src="img1.jpg" alt="展示图1" onclick="preview(this)">
-        <div class="card-body">
-          <p>进群送社工库</p>
-          <p>QQ群号：1027133752</p>
-          <a class="btn" href="https://jq.qq.com/?_wv=1027&k=0xZODFjw" target="_blank">点击加入 QQ 群</a>
-        </div>
-      </div>
-
-      <div class="card">
-        <img src="img2.jpg" alt="展示图2" onclick="preview(this)">
-        <div class="card-body">
-          <p>支持全平台查档</p>
-          <p>快速响应｜专业解答</p>
-        </div>
-      </div>
-
-      <div class="card">
-        <img src="img3.jpg" alt="展示图3" onclick="preview(this)">
-        <div class="card-body">
-          <p>安全保障｜绝不二次收费</p>
-        </div>
-      </div>
+    <div class="card">
+      <h1>安全保障</h1>
+      <p>绝不二次收费 ｜ 隐私保护</p>
+      <img src="img3.jpg" onclick="preview(this.src)" />
     </div>
   </div>
 
-  <!-- 放大预览 -->
-  <div class="preview" id="preview" onclick="this.style.display='none'">
-    <img id="preview-img" src="">
+  <div id="preview" onclick="this.style.display='none'">
+    <img src="" />
   </div>
 
   <script>
-    // 图片点击放大
-    function preview(img) {
-      const box = document.getElementById('preview');
-      const bigImg = document.getElementById('preview-img');
-      bigImg.src = img.src;
-      box.style.display = 'flex';
+    function preview(src) {
+      const p = document.getElementById('preview');
+      const img = p.querySelector('img');
+      img.src = src;
+      p.style.display = 'flex';
     }
-
-    // 页面加载完成后处理
-    window.onload = function () {
-      const loading = document.getElementById('loading-screen');
-      const content = document.getElementById('main-content');
-      loading.style.opacity = '0';
-      setTimeout(() => {
-        loading.style.display = 'none';
-        content.style.opacity = '1';
-      }, 800);
-    };
   </script>
-
 </body>
 </html>
