@@ -22,23 +22,11 @@
       height: 100%;
       color: white;
       overflow-x: hidden;
-      background: black;
-    }
-
-    /* 背景视频样式 */
-    .bg-video {
-      position: fixed;
-      right: 0;
-      bottom: 0;
-      min-width: 100%;
-      min-height: 100%;
-      object-fit: cover;
-      z-index: -1;
-      filter: blur(3px) brightness(0.7);
+      background: linear-gradient(135deg, #1a1a2e, #16213e);
     }
 
     .overlay {
-      background-color: rgba(0, 0, 0, 0.6);
+      background-color: rgba(0, 0, 0, 0.7);
       backdrop-filter: blur(8px);
       min-height: 100vh;
       padding: 40px 20px;
@@ -130,11 +118,6 @@
   </style>
 </head>
 <body>
-  <!-- 背景视频（使用 jsDelivr 加速） -->
-  <video autoplay muted loop playsinline class="bg-video">
-    <source src="https://cdn.jsdelivr.net/gh/ZZY114514666/ZZY/云5.mp4" type="video/mp4" />
-  </video>
-
   <div class="overlay">
     <div class="container">
       <div class="card">
@@ -155,8 +138,8 @@
 
       <div class="card">
         <div class="title">截图演示</div>
-        <img class="preview" src="https://cdn.jsdelivr.net/gh/ZZY114514666/ZZY/IMG_20250719_1.JPG" alt="截图1" />
-        <img class="preview" src="https://cdn.jsdelivr.net/gh/ZZY114514666/ZZY/IMG_20250719_2.JPG" alt="截图2" />
+        <img class="preview" src="https://cdn.jsdelivr.net/gh/ZZY114514666/ZZY/IMG_20250719_131802.jpg" alt="截图1" />
+        <img class="preview" src="https://cdn.jsdelivr.net/gh/ZZY114514666/ZZY/IMG_20250719_131640.jpg" alt="截图2" />
       </div>
     </div>
   </div>
