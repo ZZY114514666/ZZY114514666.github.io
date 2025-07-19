@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -12,127 +12,104 @@
     }
     html, body {
       height: 100%;
-      font-family: "Helvetica Neue", sans-serif;
+      font-family: "Microsoft YaHei", sans-serif;
+      color: white;
       overflow-x: hidden;
-      scroll-behavior: smooth;
+      background: url('https://images.unsplash.com/photo-1499083097717-a156f48f2e72?auto=format&fit=crop&w=800&q=80') no-repeat center center fixed;
+      background-size: cover;
     }
-    body {
-      background: #000;
-      color: #fff;
-    }
-    video.bg {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      object-fit: cover;
-      z-index: -10;
-    }
+
     .overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.5);
-      backdrop-filter: blur(4px);
-      z-index: -5;
+      background-color: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(5px);
+      min-height: 100vh;
+      padding: 40px 20px;
     }
+
     .container {
-      padding: 60px 20px;
+      max-width: 600px;
+      margin: 0 auto;
     }
+
     .card {
       background: rgba(0, 0, 0, 0.75);
-      border-radius: 20px;
+      border-radius: 15px;
       padding: 20px;
       margin-bottom: 30px;
-      box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
       transition: transform 0.3s ease;
-      animation: fadeIn 1s ease-in-out;
     }
+
     .card:hover {
-      transform: translateY(-5px);
+      transform: translateY(-3px);
     }
-    .card h2 {
-      font-size: 24px;
-      margin-bottom: 12px;
+
+    .title {
+      font-size: 22px;
+      font-weight: bold;
+      margin-bottom: 15px;
       text-align: center;
     }
-    .card p {
-      font-size: 16px;
-      line-height: 1.6;
+
+    .desc {
       text-align: center;
+      color: #cccccc;
+      font-size: 15px;
     }
-    .join-btn {
+
+    .btn {
       display: block;
-      margin: 10px auto 20px auto;
-      padding: 10px 20px;
-      background: #00d4d4;
-      color: black;
+      width: 100%;
+      padding: 12px 0;
+      background-color: #009688;
       border: none;
       border-radius: 10px;
-      font-size: 16px;
+      font-size: 17px;
+      font-weight: bold;
       cursor: pointer;
-      transition: background 0.3s ease;
+      color: white;
+      margin: 15px auto;
+      text-align: center;
+      transition: background-color 0.3s;
     }
-    .join-btn:hover {
-      background: #00ffff;
+
+    .btn:hover {
+      background-color: #00796b;
     }
-    .preview-img {
+
+    img.preview {
       width: 100%;
       border-radius: 12px;
-      cursor: pointer;
-      transition: transform 0.3s;
-    }
-    .preview-img:hover {
-      transform: scale(1.05);
-    }
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      margin-top: 15px;
     }
   </style>
 </head>
 <body>
+  <div class="overlay">
+    <div class="container">
+      <div class="card">
+        <div class="title">西海开盒查档</div>
+        <button class="btn" onclick="window.open('https://qm.qq.com/cgi-bin/qm/qr?k=xxxx', '_blank')">点击加入 QQ 群</button>
+        <div class="desc">进群送社工库<br>QQ群号：1027133752</div>
+      </div>
 
-  <!-- 背景视频 -->
-  <video class="云5" autoplay muted loop playsinline>
-    <source src="云5.mp4" type="video/mp4" />
-    <!-- 可改成 background-image -->
-  </video>
-  <div class="overlay"></div>
+      <div class="card">
+        <div class="title">支持全平台查档</div>
+        <div class="desc">快速响应 ｜ 专业解答</div>
+      </div>
 
-  <div class="container">
-    <div class="card">
-      <h2>西海开盒查档</h2>
-      <button class="join-btn" onclick="location.href='https://jq.qq.com/?_wv=1027&k=mA6lU7ek'">点击加入 QQ 群</button>
-      <p>进群送社工库<br />QQ群号：1027133752</p>
-    </div>
+      <div class="card">
+        <div class="title">安全保障</div>
+        <div class="desc">绝不二次收费 ｜ 隐私保护</div>
+      </div>
 
-    <div class="card">
-      <h2>文件展示</h2>
-      <img src="img1.jpg" alt="图片1" class="preview-img" onclick="preview('img1.jpg')" />
-    </div>
-
-    <div class="card">
-      <h2>详细查档信息</h2>
-      <img src="img2.jpg" alt="图片2" class="preview-img" onclick="preview('img2.jpg')" />
+      <!-- 演示插入图片 -->
+      <div class="card">
+        <div class="title">截图演示</div>
+        <img class="preview" src="你的图片链接1.jpg" alt="截图1" />
+        <img class="preview" src="你的图片链接2.jpg" alt="截图2" />
+      </div>
     </div>
   </div>
-
-  <script>
-    function preview(src) {
-      const win = window.open();
-      win.document.write(`<img src="${src}" style="width:100%">`);
-    }
-  </script>
-
 </body>
 </html>
