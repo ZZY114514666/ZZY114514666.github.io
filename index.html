@@ -9,78 +9,111 @@
       margin: 0;
       padding: 0;
       box-sizing: border-box;
+      font-family: "Microsoft YaHei", "Segoe UI", sans-serif;
     }
+    
+    :root {
+      --primary: #009688;
+      --primary-dark: #00796b;
+      --card-bg: rgba(20, 20, 30, 0.9);
+    }
+    
     html, body {
       height: 100%;
-      font-family: "Microsoft YaHei", sans-serif;
       color: white;
       overflow-x: hidden;
-      background: url('https://images.unsplash.com/photo-1499083097717-a156f48f2e72?auto=format&fit=crop&w=800&q=80') no-repeat center center fixed;
-      background-size: cover;
+      background: linear-gradient(135deg, #1a1a2e, #16213e);
     }
-
+    
     .overlay {
-      background-color: rgba(0, 0, 0, 0.4);
-      backdrop-filter: blur(5px);
+      background-color: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(8px);
       min-height: 100vh;
       padding: 40px 20px;
     }
-
+    
     .container {
       max-width: 600px;
       margin: 0 auto;
     }
-
+    
     .card {
-      background: rgba(0, 0, 0, 0.75);
-      border-radius: 15px;
-      padding: 20px;
-      margin-bottom: 30px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-      transition: transform 0.3s ease;
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 25px;
+      margin-bottom: 25px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      border: 1px solid rgba(255, 255, 255, 0.05);
     }
-
+    
     .card:hover {
-      transform: translateY(-3px);
+      transform: translateY(-5px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
     }
-
+    
     .title {
       font-size: 22px;
       font-weight: bold;
       margin-bottom: 15px;
       text-align: center;
+      color: #4db6ac;
     }
-
+    
     .desc {
       text-align: center;
-      color: #cccccc;
+      color: #b0bec5;
       font-size: 15px;
+      line-height: 1.6;
     }
-
+    
     .btn {
       display: block;
       width: 100%;
-      padding: 12px 0;
-      background-color: #009688;
+      padding: 14px 0;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
       border: none;
-      border-radius: 10px;
-      font-size: 17px;
+      border-radius: 8px;
+      font-size: 16px;
       font-weight: bold;
       cursor: pointer;
       color: white;
-      margin: 15px auto;
+      margin: 20px auto;
       text-align: center;
-      transition: background-color 0.3s;
+      transition: all 0.3s;
+      box-shadow: 0 4px 15px rgba(0, 150, 136, 0.4);
     }
-
+    
     .btn:hover {
-      background-color: #00796b;
+      background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+      box-shadow: 0 6px 20px rgba(0, 150, 136, 0.6);
     }
-
-    img.preview {
+    
+    .preview {
       width: 100%;
-      border-radius: 12px;
+      border-radius: 10px;
       margin-top: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      transition: transform 0.3s ease;
+    }
+    
+    .preview:hover {
+      transform: scale(1.02);
+    }
+    
+    @media (max-width: 480px) {
+      .card {
+        padding: 20px;
+      }
+      
+      .title {
+        font-size: 20px;
+      }
+      
+      .btn {
+        padding: 12px 0;
+        font-size: 15px;
+      }
     }
   </style>
 </head>
