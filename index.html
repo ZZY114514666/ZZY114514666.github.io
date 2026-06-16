@@ -2,10 +2,9 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>个人工作室 · 品牌展示</title>
   <style>
-    /* ===== 全局重置 & 基础 ===== */
     * {
       margin: 0;
       padding: 0;
@@ -16,44 +15,39 @@
     html, body {
       height: 100%;
       overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
     }
 
-    /* ===== 优化版彩虹渐变（流动感 + 光晕） ===== */
+    /* ===== 彩虹渐变（极慢动画，省性能） ===== */
     body {
-      background: linear-gradient(135deg, #ff6b6b, #feca57, #48dbfb, #1dd1a1, #5f27cd, #ff6b6b);
-      background-size: 300% 300%;
-      animation: rainbowFlow 18s ease-in-out infinite alternate;
-      position: relative;
+      background: linear-gradient(135deg, #ff6b6b, #feca57, #48dbfb, #1dd1a1, #5f27cd);
+      background-size: 400% 400%;
+      animation: rainbowSlow 30s ease-in-out infinite alternate;
     }
 
-    /* 叠加一层柔光晕染，让彩虹更融合 */
+    @keyframes rainbowSlow {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 100% 50%; }
+    }
+
     body::before {
       content: "";
       position: fixed;
       inset: 0;
-      background: radial-gradient(circle at 30% 40%, rgba(255, 255, 255, 0.15) 0%, transparent 60%),
-                  radial-gradient(circle at 80% 70%, rgba(255, 200, 200, 0.12) 0%, transparent 50%);
+      background: radial-gradient(circle at 30% 40%, rgba(255, 255, 255, 0.08) 0%, transparent 60%);
       pointer-events: none;
       z-index: 0;
     }
 
-    @keyframes rainbowFlow {
-      0% { background-position: 0% 0%; }
-      25% { background-position: 100% 0%; }
-      50% { background-position: 100% 100%; }
-      75% { background-position: 0% 100%; }
-      100% { background-position: 0% 0%; }
-    }
-
-    /* ===== 毛玻璃遮罩层 ===== */
+    /* ===== 毛玻璃遮罩 ===== */
     .overlay {
       position: relative;
       z-index: 1;
-      background: rgba(10, 10, 20, 0.55);
-      backdrop-filter: blur(12px) saturate(1.2);
-      -webkit-backdrop-filter: blur(12px) saturate(1.2);
+      background: rgba(10, 10, 20, 0.5);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
       min-height: 100vh;
-      padding: 48px 20px;
+      padding: 40px 16px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -65,45 +59,52 @@
       margin: 0 auto;
     }
 
-    /* ===== 卡片设计 ===== */
+    /* ===== 卡片（保留悬停动画） ===== */
     .card {
-      background: rgba(20, 22, 36, 0.75);
-      backdrop-filter: blur(4px);
-      -webkit-backdrop-filter: blur(4px);
-      border-radius: 24px;
-      padding: 28px 22px;
-      margin-bottom: 24px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
-      transition: transform 0.3s cubic-bezier(.34,1.56,.64,1), box-shadow 0.4s ease;
+      background: rgba(20, 22, 36, 0.7);
+      backdrop-filter: blur(2px);
+      -webkit-backdrop-filter: blur(2px);
+      border-radius: 20px;
+      padding: 24px 20px;
+      margin-bottom: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+      transition: transform 0.25s cubic-bezier(.34,1.56,.64,1), box-shadow 0.3s ease;
     }
 
-    .card:hover {
-      transform: translateY(-6px) scale(1.01);
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-      border-color: rgba(255, 255, 255, 0.15);
+    /* 手机上点击反馈 */
+    .card:active {
+      transform: scale(0.98);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
     }
 
-    /* ===== 标题 & 文字 ===== */
+    /* 电脑上悬停效果（手机自动忽略） */
+    @media (hover: hover) {
+      .card:hover {
+        transform: translateY(-4px) scale(1.01);
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+        border-color: rgba(255, 255, 255, 0.12);
+      }
+    }
+
     .title {
-      font-size: 26px;
+      font-size: 24px;
       font-weight: 700;
       text-align: center;
-      letter-spacing: 1px;
+      letter-spacing: 0.5px;
       background: linear-gradient(135deg, #f8f9fa, #b0d4ff);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
 
     .subtitle {
       text-align: center;
-      color: rgba(220, 230, 245, 0.8);
+      color: rgba(220, 230, 245, 0.75);
       font-size: 15px;
       line-height: 1.6;
       font-weight: 300;
-      letter-spacing: 0.5px;
     }
 
     .highlight {
@@ -111,102 +112,73 @@
       font-weight: 500;
     }
 
-    /* ===== 按钮 (QQ群 → 可改为微信/邮箱/链接) ===== */
     .btn {
       display: block;
       width: 100%;
-      padding: 16px 0;
+      padding: 15px 0;
       background: linear-gradient(145deg, #3a7bd5, #2b5fa8);
       border: none;
       border-radius: 60px;
-      font-size: 18px;
+      font-size: 17px;
       font-weight: 600;
       color: #fff;
       text-align: center;
       text-decoration: none;
-      margin: 18px 0 8px;
-      transition: all 0.25s ease;
-      box-shadow: 0 6px 24px rgba(42, 109, 223, 0.35);
-      letter-spacing: 1px;
-    }
-
-    .btn:hover {
-      transform: scale(1.02);
-      box-shadow: 0 10px 32px rgba(42, 109, 223, 0.55);
-      background: linear-gradient(145deg, #4c8ee0, #2f6bb8);
+      margin: 16px 0 6px;
+      transition: opacity 0.15s ease;
+      box-shadow: 0 4px 20px rgba(42, 109, 223, 0.3);
     }
 
     .btn:active {
+      opacity: 0.7;
       transform: scale(0.97);
     }
 
-    /* ===== 标签组（服务/特点） ===== */
     .tags {
       display: flex;
       flex-wrap: wrap;
-      gap: 10px;
+      gap: 8px;
       justify-content: center;
       margin-top: 10px;
     }
 
     .tag {
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      padding: 6px 18px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 5px 16px;
       border-radius: 40px;
-      font-size: 14px;
+      font-size: 13px;
       color: #cfdfff;
       font-weight: 300;
-      backdrop-filter: blur(2px);
     }
 
-    /* ===== 图片占位 (可替换为你自己的截图) ===== */
     .preview-grid {
       display: flex;
       flex-direction: column;
-      gap: 14px;
-      margin-top: 16px;
+      gap: 12px;
+      margin-top: 14px;
     }
 
     .preview-img {
       width: 100%;
-      border-radius: 16px;
+      border-radius: 14px;
       display: block;
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.04);
     }
 
-    .preview-img:hover {
-      transform: scale(1.01);
-      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.3);
-    }
-
-    /* 图片加载失败时的占位样式 */
-    .preview-img::before {
-      content: "🖼️ 图片加载中...";
-      display: block;
-      padding: 40px 0;
-      text-align: center;
-      color: rgba(255, 255, 255, 0.25);
-      font-size: 14px;
-    }
-
-    /* ===== 底部脚标 ===== */
     .footer-note {
       text-align: center;
-      color: rgba(255, 255, 255, 0.2);
-      font-size: 12px;
-      margin-top: 20px;
-      letter-spacing: 1px;
+      color: rgba(255, 255, 255, 0.15);
+      font-size: 11px;
+      margin-top: 16px;
     }
 
-    /* ===== 移动端适配 ===== */
     @media (max-width: 480px) {
-      .overlay { padding: 28px 14px; }
-      .card { padding: 22px 16px; }
-      .title { font-size: 22px; }
-      .btn { font-size: 16px; padding: 14px 0; }
+      .overlay { padding: 24px 12px; }
+      .card { padding: 18px 14px; }
+      .title { font-size: 20px; }
+      .btn { font-size: 15px; padding: 13px 0; }
     }
   </style>
 </head>
@@ -214,14 +186,12 @@
   <div class="overlay">
     <div class="container">
 
-      <!-- ========= 卡片 1：品牌标题 + 简介 ========= -->
       <div class="card">
         <div class="title">✨ 星尘工作室</div>
         <div class="subtitle">
           专注 · 创新 · 极客精神<br>
           <span class="highlight">用心打磨每一行代码</span>
         </div>
-        <!-- 按钮可改为你的微信/邮箱/官网链接 -->
         <a href="#" class="btn">📩 联系主理人</a>
         <div class="tags">
           <span class="tag">🛠 全栈开发</span>
@@ -230,10 +200,9 @@
         </div>
       </div>
 
-      <!-- ========= 卡片 2：服务特色 ========= -->
       <div class="card">
         <div class="title">⚡ 我们的优势</div>
-        <div class="subtitle" style="margin-bottom: 6px;">
+        <div class="subtitle" style="margin-bottom: 4px;">
           快速响应 ｜ 专业交付 ｜ 透明沟通
         </div>
         <div class="tags">
@@ -243,7 +212,6 @@
         </div>
       </div>
 
-      <!-- ========= 卡片 3：安全保障 ========= -->
       <div class="card">
         <div class="title">🛡️ 安全 & 诚信</div>
         <div class="subtitle">
@@ -252,12 +220,10 @@
         </div>
       </div>
 
-      <!-- ========= 卡片 4：作品截图展示 ========= -->
       <div class="card">
         <div class="title">📸 近期作品</div>
-        <div class="subtitle" style="margin-bottom: 10px;">（示例截图 · 可替换为你自己的图片）</div>
+        <div class="subtitle" style="margin-bottom: 8px; font-size: 13px;">（示例截图 · 可替换为你自己的图片）</div>
         <div class="preview-grid">
-          <!-- 替换 src 为你自己的图片链接，建议用仓库内相对路径如 "work1.jpg" -->
           <img class="preview-img" src="https://picsum.photos/600/300?random=1" alt="作品截图1" />
           <img class="preview-img" src="https://picsum.photos/600/300?random=2" alt="作品截图2" />
         </div>
@@ -267,11 +233,9 @@
     </div>
   </div>
 
-  <!-- ===== 背景音乐（可删，默认不自动播放） ===== -->
   <audio id="bgm" src="https://cdn.statically.io/gh/ZZY114514666/ZZY114514666.github.io/main/Sea_breeze(Phonk)-DJ%E5%B0%8F%E8%92%8B-450529779-100(1).mp3" preload="none"></audio>
 
   <script>
-    // 轻量交互：点击页面任意位置尝试播放 BGM（如果存在）
     const audio = document.getElementById('bgm');
     if (audio) {
       const playBGM = () => {
