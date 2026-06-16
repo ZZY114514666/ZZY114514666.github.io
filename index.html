@@ -256,15 +256,15 @@
       }
 
       update() {
-        const driftX = gyroX * 1.0;
-        const driftY = gyroY * 1.0;
+        const driftX = gyroX * 3.5;
+        const driftY = gyroY * 3.5;
         this.angle += this.wanderSpeed;
         const wanderX = Math.sin(this.angle) * this.wanderRadius * 0.015;
         const wanderY = Math.cos(this.angle * 0.7) * this.wanderRadius * 0.015;
         const targetX = this.baseX + wanderX + driftX * 25;
         const targetY = this.baseY + wanderY + driftY * 25;
-        this.x += (targetX - this.x) * 0.02;
-        this.y += (targetY - this.y) * 0.02;
+        this.x += (targetX - this.x) * 0.08;
+        this.y += (targetY - this.y) * 0.08;
         if (this.x < -50) this.x = width + 50;
         if (this.x > width + 50) this.x = -50;
         if (this.y < -50) this.y = height + 50;
