@@ -229,22 +229,44 @@
 
   <script>
     // ============================================================
-    // 1. 底层粒子系统（彩虹色 + 陀螺仪互动）
+    // 1. 底层粒子系统（防抖动优化版）
     // ============================================================
     const canvas = document.getElementById('particleCanvas');
     const ctx = canvas.getContext('2d');
     let width, height;
     let particles = [];
     const PARTICLE_COUNT = 100;
-    let gyroX = 0, gyroY = 0;
-    let targetGX = 0, targetGY = 0;
+    let gyroX = 0,
+      gyroY = 0;
+    let targetGX = 0,
+      targetGY = 0;
+    let resizeTimeout = null;
 
     function resize() {
-      width = canvas.width = window.innerWidth;
-      height = canvas.height = window.innerHeight;
+      if (resizeTimeout) {
+        cancelAnimationFrame(resizeTimeout);
+        resizeTimeout = null;
+      }
+      resizeTimeout = requestAnimationFrame(() => {
+        const newWidth = window.innerWidth;
+        const newHeight = window.innerHeight;
+        if (Math.abs(newWidth - width) > 2 || Math.abs(newHeight - height) > 2) {
+          width = canvas.width = newWidth;
+          height = canvas.height = newHeight;
+          for (const p of particles) {
+            p.baseX = Math.random() * width;
+            p.baseY = Math.random() * height;
+            p.x = Math.random() * width;
+            p.y = Math.random() * height;
+          }
+        }
+        resizeTimeout = null;
+      });
     }
-    window.addEventListener('resize', resize);
-    resize();
+
+    width = canvas.width = window.innerWidth;
+    height = canvas.height = window.innerHeight;
+    window.addEventListener('resize', resize, { passive: true });
 
     class Particle {
       constructor(index) {
@@ -316,16 +338,25 @@
       }
     }
 
+    let animFrameId = null;
+
     function animate() {
-      ctx.clearRect(0, 0, width, height);
-      for (const p of particles) p.update();
-      drawLines();
-      for (const p of particles) p.draw();
-      requestAnimationFrame(animate);
+      if (animFrameId) {
+        cancelAnimationFrame(animFrameId);
+        animFrameId = null;
+      }
+      animFrameId = requestAnimationFrame(() => {
+        ctx.clearRect(0, 0, width, height);
+        for (const p of particles) p.update();
+        drawLines();
+        for (const p of particles) p.draw();
+        animFrameId = null;
+        animate();
+      });
     }
     animate();
 
-    // ===== 陀螺仪 =====
+    // ===== 陀螺仪（平滑版） =====
     if (window.DeviceOrientationEvent) {
       window.addEventListener('deviceorientation', (e) => {
         let beta = e.beta || 0;
@@ -374,7 +405,7 @@
       W2 = canvas2.width = window.innerWidth;
       H2 = canvas2.height = window.innerHeight;
     }
-    window.addEventListener('resize', resize2);
+    window.addEventListener('resize', resize2, { passive: true });
     resize2();
 
     canvas2.style.position = 'fixed';
