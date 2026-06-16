@@ -14,7 +14,7 @@
 
     html, body {
       height: 100%;
-      overflow-y: auto; /* ✅ 允许滚动 */
+      overflow-y: auto;
       background: #0b0b14;
       -webkit-overflow-scrolling: touch;
     }
@@ -27,13 +27,13 @@
       height: 100vh;
       z-index: 0;
       display: block;
-      pointer-events: none; /* 让点击穿透到内容 */
+      pointer-events: none;
     }
 
     .overlay {
       position: relative;
       z-index: 1;
-      min-height: 100vh; /* ✅ 改为 min-height 让内容撑开 */
+      min-height: 100vh;
       padding: 30px 16px 50px;
       display: flex;
       align-items: center;
@@ -171,8 +171,10 @@
 </head>
 <body>
 
+  <!-- 底层粒子画布 -->
   <canvas id="particleCanvas"></canvas>
 
+  <!-- 内容层 -->
   <div class="overlay">
     <div class="container">
       <div class="card">
@@ -181,7 +183,7 @@
           专注 · 创新 · 极客精神<br>
           <span class="highlight">用心打磨每一行代码</span>
         </div>
-        <a href="mqq://im/chat?chat_type=wpa&uin=3561363267&version=1" class="btn">联系我🎭</a>
+        <a href="mqq://im/chat?chat_type=wpa&uin=你的QQ号&version=1" class="btn">📩 联系主理人</a>
         <div class="tags">
           <span class="tag">🛠 全栈开发</span>
           <span class="tag">🎨 UI/UX 设计</span>
@@ -222,15 +224,18 @@
     </div>
   </div>
 
-  <audio id="bgm" src="https://cdn.statically.io/gh/ZZY114514666/ZZY114514666.github.io/main/Sea_breeze(Phonk)-DJ%E5%B0%8F%E8%92%8B-450529779-100(1).mp3" preload="none"></audio>
+  <!-- BGM -->
+  <audio id="bgm" src="bgm.mp3" preload="none"></audio>
 
   <script>
-    // ===== 粒子系统 =====
+    // ============================================================
+    // 1. 底层粒子系统（彩虹色 + 陀螺仪互动）
+    // ============================================================
     const canvas = document.getElementById('particleCanvas');
     const ctx = canvas.getContext('2d');
     let width, height;
     let particles = [];
-    const PARTICLE_COUNT = 100; // 减到100个更流畅
+    const PARTICLE_COUNT = 100;
     let gyroX = 0, gyroY = 0;
     let targetGX = 0, targetGY = 0;
 
@@ -351,12 +356,94 @@
     setInterval(() => {
       if (!window.DeviceOrientationEvent) {
         autoDrift += 0.003;
-        targetGX = Math.sin(autoDrift) * 0.3;
-        targetGY = Math.cos(autoDrift * 0.7) * 0.2;
+        targetGX = Math.sin(autoDrift) * 0.8;
+        targetGY = Math.cos(autoDrift * 0.7) * 0.6;
       }
     }, 50);
 
-    // ===== BGM =====
+    // ============================================================
+    // 2. 上层落雪粒子（在所有控件之上，不挡点击）
+    // ============================================================
+    const canvas2 = document.createElement('canvas');
+    canvas2.id = 'snowCanvas';
+    document.body.appendChild(canvas2);
+    const ctx2 = canvas2.getContext('2d');
+    let W2, H2;
+
+    function resize2() {
+      W2 = canvas2.width = window.innerWidth;
+      H2 = canvas2.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize2);
+    resize2();
+
+    canvas2.style.position = 'fixed';
+    canvas2.style.top = '0';
+    canvas2.style.left = '0';
+    canvas2.style.width = '100vw';
+    canvas2.style.height = '100vh';
+    canvas2.style.pointerEvents = 'none';
+    canvas2.style.zIndex = '999';
+
+    const snowflakes = [];
+    const SNOW_COUNT = 50;
+
+    class Snowflake {
+      constructor() {
+        this.reset();
+        this.y = Math.random() * H2;
+      }
+      reset() {
+        this.x = Math.random() * W2;
+        this.y = -10;
+        this.size = 2 + Math.random() * 5;
+        this.speed = 0.4 + Math.random() * 1.2;
+        this.wind = (Math.random() - 0.5) * 0.3;
+        this.opacity = 0.2 + Math.random() * 0.4;
+        this.hue = Math.random() * 360;
+      }
+      update() {
+        this.y += this.speed;
+        this.x += this.wind + Math.sin(this.y * 0.01) * 0.2;
+        if (this.y > H2 + 10) {
+          this.reset();
+          this.y = -10;
+        }
+        if (this.x > W2 + 10) this.x = -10;
+        if (this.x < -10) this.x = W2 + 10;
+      }
+      draw() {
+        ctx2.beginPath();
+        const gradient = ctx2.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size * 2);
+        gradient.addColorStop(0, `hsla(${this.hue}, 80%, 80%, ${this.opacity})`);
+        gradient.addColorStop(1, `hsla(${this.hue}, 80%, 80%, 0)`);
+        ctx2.fillStyle = gradient;
+        ctx2.arc(this.x, this.y, this.size * 2, 0, Math.PI * 2);
+        ctx2.fill();
+        ctx2.beginPath();
+        ctx2.arc(this.x, this.y, this.size * 0.4, 0, Math.PI * 2);
+        ctx2.fillStyle = `hsla(0, 0%, 100%, ${this.opacity * 0.6})`;
+        ctx2.fill();
+      }
+    }
+
+    for (let i = 0; i < SNOW_COUNT; i++) {
+      snowflakes.push(new Snowflake());
+    }
+
+    function animateSnow() {
+      ctx2.clearRect(0, 0, W2, H2);
+      for (const s of snowflakes) {
+        s.update();
+        s.draw();
+      }
+      requestAnimationFrame(animateSnow);
+    }
+    animateSnow();
+
+    // ============================================================
+    // 3. BGM 播放
+    // ============================================================
     const audioEl = document.getElementById('bgm');
     if (audioEl) {
       const playBGM = () => {
