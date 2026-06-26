@@ -19,7 +19,26 @@
       -webkit-overflow-scrolling: touch;
     }
 
-    /* 底层粒子 */
+    /* ===== 加载遮罩（淡出） ===== */
+    #loading-mask {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: #0b0b14;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255, 255, 255, 0.08);
+      font-size: 13px;
+      letter-spacing: 3px;
+      pointer-events: none;
+      transition: opacity 1.6s ease;
+    }
+    #loading-mask.hide {
+      opacity: 0;
+    }
+
+    /* ===== 粒子层 ===== */
     #particleCanvas {
       position: fixed;
       top: 0;
@@ -31,7 +50,7 @@
       pointer-events: none;
     }
 
-    /* 爱心画布 - 置于最上层但不遮挡点击 */
+    /* ===== 爱心层 ===== */
     #heartCanvas {
       position: fixed;
       top: 0;
@@ -60,6 +79,8 @@
       width: 100%;
       margin: 0 auto;
     }
+
+    /* ===== 卡片 ===== */
     .card {
       background: rgba(18, 20, 35, 0.65);
       backdrop-filter: blur(8px);
@@ -72,7 +93,16 @@
       transition: transform 0.25s cubic-bezier(.34, 1.56, .64, 1), box-shadow 0.3s ease;
       position: relative;
       overflow: hidden;
+      /* 入场动画默认隐藏 */
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease, box-shadow 0.3s ease;
     }
+    .card.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
     .card::before {
       content: '';
       position: absolute;
@@ -94,6 +124,7 @@
         border-color: rgba(251, 191, 36, 0.3);
       }
     }
+
     .title {
       font-size: 26px;
       font-weight: 700;
@@ -221,15 +252,16 @@
 </head>
 <body>
 
-  <!-- 底层粒子 -->
+  <!-- ===== 加载遮罩 ===== -->
+  <div id="loading-mask">✨ 正在打开 · 送给老爸</div>
+
   <canvas id="particleCanvas"></canvas>
-  <!-- 爱心画布 -->
   <canvas id="heartCanvas"></canvas>
 
   <div class="overlay">
-    <div class="container">
+    <div class="container" id="cardContainer">
 
-      <!-- ===== 卡片1：主标题 ===== -->
+      <!-- 卡片1 -->
       <div class="card">
         <div class="title">🎂 老爸，生日快乐</div>
         <div class="subtitle">
@@ -250,7 +282,7 @@
         </div>
       </div>
 
-      <!-- ===== 卡片2：家书 ===== -->
+      <!-- 卡片2 -->
       <div class="card">
         <div class="title">❤️ 给爸爸的一封信</div>
         <div class="subtitle" style="text-align: left; padding: 0 4px; line-height: 2.2; font-size: 15px;">
@@ -269,7 +301,7 @@
         </div>
       </div>
 
-      <!-- ===== 卡片3：全家福 ===== -->
+      <!-- 卡片3 -->
       <div class="card">
         <div class="title">📸 我们的全家福</div>
         <div class="subtitle" style="margin-bottom: 8px; font-size: 13px;">每一张照片，都是我们最珍贵的时光</div>
@@ -281,7 +313,7 @@
         </div>
       </div>
 
-      <!-- ===== 卡片4：我们的家 ===== -->
+      <!-- 卡片4 -->
       <div class="card">
         <div class="title">🏠 我们的家</div>
         <div class="subtitle" style="text-align: left; padding: 0 4px; line-height: 2.2; font-size: 15px;">
@@ -297,7 +329,7 @@
         </div>
       </div>
 
-      <!-- ===== 卡片5：我眼中的您 ===== -->
+      <!-- 卡片5 -->
       <div class="card">
         <div class="title">🌟 我眼中的您</div>
         <div class="tags" style="margin-top: 6px;">
@@ -314,7 +346,7 @@
         </div>
       </div>
 
-      <!-- ===== 卡片6：祝福墙 ===== -->
+      <!-- 卡片6 -->
       <div class="card">
         <div class="title">🎁 生日祝福墙</div>
         <div class="subtitle" style="line-height: 2.4; font-size: 15px;">
@@ -329,7 +361,7 @@
         </div>
       </div>
 
-      <!-- ===== 卡片7：结尾 ===== -->
+      <!-- 卡片7 -->
       <div class="card">
         <div class="title">🌅 最后想说的话</div>
         <div class="subtitle" style="text-align: left; padding: 0 4px; line-height: 2.2; font-size: 15px;">
@@ -356,7 +388,39 @@
 
   <script>
     // ============================================================
-    // 1. 底层粒子（彩虹色 + 陀螺仪）
+    // 0. 加载遮罩淡出
+    // ============================================================
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        document.getElementById('loading-mask').classList.add('hide');
+      }, 400);
+    });
+
+    // ============================================================
+    // 1. 卡片滚动入场（Intersection Observer）
+    // ============================================================
+    const cards = document.querySelectorAll('.card');
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          // 卡片进入视口时加上 visible 类
+          entry.target.classList.add('visible');
+        }
+      });
+    }, {
+      threshold: 0.15, // 卡片露出 15% 时触发
+      rootMargin: '0px 0px -20px 0px' // 稍微提前一点点触发
+    });
+
+    cards.forEach((card, index) => {
+      // 每张卡片延迟一点点，形成排队效果
+      card.style.transitionDelay = (index * 0.08) + 's';
+      observer.observe(card);
+    });
+
+    // ============================================================
+    // 2. 底层粒子（彩虹色 + 陀螺仪）
     // ============================================================
     const canvas = document.getElementById('particleCanvas');
     const ctx = canvas.getContext('2d');
@@ -493,7 +557,7 @@
     }, 50);
 
     // ============================================================
-    // 2. 爱心飘落（独立画布，不阻塞）
+    // 3. 爱心飘落
     // ============================================================
     const heartCanvas = document.getElementById('heartCanvas');
     const hCtx = heartCanvas.getContext('2d');
@@ -577,7 +641,7 @@
     }, { passive: true });
 
     // ============================================================
-    // 3. BGM：滑动页面触发播放（只播一次）
+    // 4. BGM：滑动页面触发播放
     // ============================================================
     const audioEl = document.getElementById('bgm');
     if (audioEl) {
@@ -593,9 +657,7 @@
         }).catch(() => {});
       };
 
-      // 滑动触发（手机滑动时触发 scroll 事件）
       document.addEventListener('scroll', tryPlayBGM, { passive: true });
-      // 如果滑动没触发，点击/触摸也能兜底
       document.addEventListener('touchstart', tryPlayBGM, { passive: true });
       document.addEventListener('click', tryPlayBGM);
     }
