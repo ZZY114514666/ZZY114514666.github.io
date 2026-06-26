@@ -1,1068 +1,1048 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>🎂 老爸，生日快乐</title>
-  <style>
-    /* ===== 所有原有样式保持不变 ===== */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: "Microsoft YaHei", "PingFang SC", system-ui, -apple-system, sans-serif;
-    }
-    html,
-    body {
-      height: 100%;
-      overflow-y: auto;
-      background: #0b0b14;
-      -webkit-overflow-scrolling: touch;
-    }
-    #loading-mask {
-      position: fixed;
-      inset: 0;
-      z-index: 9999;
-      background: #0b0b14;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: rgba(255, 255, 255, 0.08);
-      font-size: 13px;
-      letter-spacing: 3px;
-      pointer-events: none;
-      transition: opacity 1.6s ease;
-    }
-    #loading-mask.hide {
-      opacity: 0;
-    }
-    #particleCanvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      z-index: 0;
-      display: block;
-      pointer-events: none;
-    }
-    #heartCanvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      z-index: 2;
-      display: block;
-      pointer-events: none;
-    }
-    .overlay {
-      position: relative;
-      z-index: 1;
-      min-height: 100vh;
-      padding: 30px 16px 50px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: rgba(10, 10, 20, 0.35);
-      backdrop-filter: blur(2px);
-      -webkit-backdrop-filter: blur(2px);
-    }
-    .container {
-      max-width: 600px;
-      width: 100%;
-      margin: 0 auto;
-    }
-    .card {
-      background: rgba(18, 20, 35, 0.65);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border-radius: 24px;
-      padding: 26px 22px;
-      margin-bottom: 20px;
-      border: 1px solid rgba(251, 191, 36, 0.15);
-      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
-      position: relative;
-      overflow: hidden;
-      opacity: 0;
-      transform: translateY(30px);
-      transition: opacity 0.7s ease, transform 0.7s ease, box-shadow 0.3s ease;
-    }
-    .card.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-    .card::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: radial-gradient(circle at 30% 40%, rgba(251, 191, 36, 0.03) 0%, transparent 60%);
-      pointer-events: none;
-    }
-    .title {
-      font-size: 26px;
-      font-weight: 700;
-      text-align: center;
-      letter-spacing: 1px;
-      background: linear-gradient(135deg, #fbbf24, #f59e0b, #f97316);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      margin-bottom: 10px;
-    }
-    .subtitle {
-      text-align: center;
-      color: rgba(220, 230, 245, 0.85);
-      font-size: 15px;
-      line-height: 1.8;
-      font-weight: 300;
-    }
-    .highlight {
-      color: #fbbf24;
-      font-weight: 500;
-    }
-    .btn {
-      display: block;
-      width: 100%;
-      padding: 15px 0;
-      background: linear-gradient(145deg, #f59e0b, #d97706);
-      border: none;
-      border-radius: 60px;
-      font-size: 17px;
-      font-weight: 600;
-      color: #fff;
-      text-align: center;
-      text-decoration: none;
-      margin: 16px 0 6px;
-      transition: opacity 0.15s ease, transform 0.15s ease;
-      box-shadow: 0 4px 24px rgba(245, 158, 11, 0.35);
-      position: relative;
-      z-index: 2;
-      cursor: pointer;
-    }
-    .btn:active {
-      opacity: 0.7;
-      transform: scale(0.97);
-    }
-    .tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      justify-content: center;
-      margin-top: 10px;
-      position: relative;
-      z-index: 2;
-    }
-    .tag {
-      background: rgba(251, 191, 36, 0.08);
-      border: 1px solid rgba(251, 191, 36, 0.12);
-      padding: 5px 16px;
-      border-radius: 40px;
-      font-size: 13px;
-      color: #fcd34d;
-      font-weight: 300;
-    }
-    .preview-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-top: 14px;
-      position: relative;
-      z-index: 2;
-    }
-    .preview-img {
-      width: 100%;
-      aspect-ratio: 1/1;
-      object-fit: cover;
-      border-radius: 14px;
-      display: block;
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid rgba(255, 255, 255, 0.04);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    .preview-img:hover {
-      transform: scale(1.02);
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
-    }
-    .footer-note {
-      text-align: center;
-      color: rgba(255, 255, 255, 0.15);
-      font-size: 11px;
-      margin-top: 16px;
-      letter-spacing: 2px;
-    }
-    .bless-quote {
-      font-size: 14px;
-      color: #fde68a;
-      text-align: center;
-      line-height: 2;
-      padding: 6px 0;
-      border-top: 1px solid rgba(251, 191, 36, 0.1);
-      margin-top: 12px;
-      padding-top: 14px;
-    }
-    .bless-quote span {
-      display: inline-block;
-      margin: 0 6px;
-    }
-    @media (max-width: 480px) {
-      .overlay {
-        padding: 20px 12px 40px;
-      }
-      .card {
-        padding: 20px 16px;
-      }
-      .title {
-        font-size: 22px;
-      }
-      .btn {
-        font-size: 15px;
-        padding: 13px 0;
-      }
-      .preview-grid {
-        gap: 8px;
-      }
-    }
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>🎂 老爸，生日快乐</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", "PingFang SC", system-ui, -apple-system, sans-serif;
+        }
+        html,
+        body {
+            height: 100%;
+            overflow-y: auto;
+            background: #0b0b14;
+            -webkit-overflow-scrolling: touch;
+        }
+        #loading-mask {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: #0b0b14;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255, 255, 255, 0.08);
+            font-size: 13px;
+            letter-spacing: 3px;
+            pointer-events: none;
+            transition: opacity 1.6s ease;
+        }
+        #loading-mask.hide {
+            opacity: 0;
+        }
+        #particleCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            display: block;
+            pointer-events: none;
+        }
+        #heartCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 2;
+            display: block;
+            pointer-events: none;
+        }
+        .overlay {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            padding: 30px 16px 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(10, 10, 20, 0.35);
+            backdrop-filter: blur(2px);
+            -webkit-backdrop-filter: blur(2px);
+        }
+        .container {
+            max-width: 600px;
+            width: 100%;
+            margin: 0 auto;
+        }
+        .card {
+            background: rgba(18, 20, 35, 0.65);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: 24px;
+            padding: 26px 22px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(251, 191, 36, 0.15);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.7s ease, transform 0.7s ease, box-shadow 0.3s ease;
+        }
+        .card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 30% 40%, rgba(251, 191, 36, 0.03) 0%, transparent 60%);
+            pointer-events: none;
+        }
+        .title {
+            font-size: 26px;
+            font-weight: 700;
+            text-align: center;
+            letter-spacing: 1px;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b, #f97316);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            text-align: center;
+            color: rgba(220, 230, 245, 0.85);
+            font-size: 15px;
+            line-height: 1.8;
+            font-weight: 300;
+        }
+        .highlight {
+            color: #fbbf24;
+            font-weight: 500;
+        }
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 15px 0;
+            background: linear-gradient(145deg, #f59e0b, #d97706);
+            border: none;
+            border-radius: 60px;
+            font-size: 17px;
+            font-weight: 600;
+            color: #fff;
+            text-align: center;
+            text-decoration: none;
+            margin: 16px 0 6px;
+            transition: opacity 0.15s ease, transform 0.15s ease;
+            box-shadow: 0 4px 24px rgba(245, 158, 11, 0.35);
+            position: relative;
+            z-index: 2;
+            cursor: pointer;
+        }
+        .btn:active {
+            opacity: 0.7;
+            transform: scale(0.97);
+        }
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            margin-top: 10px;
+            position: relative;
+            z-index: 2;
+        }
+        .tag {
+            background: rgba(251, 191, 36, 0.08);
+            border: 1px solid rgba(251, 191, 36, 0.12);
+            padding: 5px 16px;
+            border-radius: 40px;
+            font-size: 13px;
+            color: #fcd34d;
+            font-weight: 300;
+        }
+        .preview-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 14px;
+            position: relative;
+            z-index: 2;
+        }
+        .preview-img {
+            width: 100%;
+            aspect-ratio: 1/1;
+            object-fit: cover;
+            border-radius: 14px;
+            display: block;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .preview-img:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+        }
+        .footer-note {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.15);
+            font-size: 11px;
+            margin-top: 16px;
+            letter-spacing: 2px;
+        }
+        .bless-quote {
+            font-size: 14px;
+            color: #fde68a;
+            text-align: center;
+            line-height: 2;
+            padding: 6px 0;
+            border-top: 1px solid rgba(251, 191, 36, 0.1);
+            margin-top: 12px;
+            padding-top: 14px;
+        }
+        .bless-quote span {
+            display: inline-block;
+            margin: 0 6px;
+        }
 
-    /* ===== 愿望卡片专用样式 ===== */
-    .wish-textarea {
-      width: 100%;
-      min-height: 120px;
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(251, 191, 36, 0.2);
-      border-radius: 16px;
-      padding: 14px 16px;
-      color: #fde68a;
-      font-size: 16px;
-      line-height: 1.8;
-      resize: vertical;
-      font-family: inherit;
-      transition: border-color 0.3s ease;
-      margin-top: 8px;
-    }
-    .wish-textarea:focus {
-      outline: none;
-      border-color: #fbbf24;
-      background: rgba(255, 255, 255, 0.06);
-    }
-    .wish-textarea::placeholder {
-      color: rgba(255, 255, 255, 0.2);
-      font-size: 14px;
-    }
+        .wish-textarea {
+            width: 100%;
+            min-height: 120px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(251, 191, 36, 0.2);
+            border-radius: 16px;
+            padding: 14px 16px;
+            color: #fde68a;
+            font-size: 16px;
+            line-height: 1.8;
+            resize: vertical;
+            font-family: inherit;
+            transition: border-color 0.3s ease;
+            margin-top: 8px;
+        }
+        .wish-textarea:focus {
+            outline: none;
+            border-color: #fbbf24;
+            background: rgba(255, 255, 255, 0.06);
+        }
+        .wish-textarea::placeholder {
+            color: rgba(255, 255, 255, 0.2);
+            font-size: 14px;
+        }
 
-    /* ============================================================
-       信封 → 纸飞机 折叠动画
-    ============================================================ */
-    .envelope-wrapper {
-      position: relative;
-      width: 100%;
-      max-width: 260px;
-      margin: 0 auto;
-      aspect-ratio: 4/3;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      perspective: 800px;
-    }
-    .envelope-wrapper.active {
-      display: flex;
-    }
+        .envelope-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 260px;
+            margin: 0 auto;
+            aspect-ratio: 4/3;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            perspective: 800px;
+        }
+        .envelope-wrapper.active {
+            display: flex;
+        }
+        .envelope {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.8s cubic-bezier(.4, .2, .2, 1);
+        }
+        .envelope-body {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(145deg, #f5e6c8, #e8d5b0);
+            border-radius: 6px;
+            border: 2px solid #d4b896;
+            position: relative;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            transition: all 0.8s ease;
+        }
+        .envelope-flap {
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            height: 55%;
+            background: linear-gradient(180deg, #e8d5b0 0%, #f5e6c8 100%);
+            border-radius: 6px 6px 0 0;
+            border: 2px solid #d4b896;
+            border-bottom: none;
+            transform-origin: bottom center;
+            transition: transform 0.9s cubic-bezier(.4, .2, .2, 1);
+            z-index: 3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .envelope-flap::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 60px solid transparent;
+            border-right: 60px solid transparent;
+            border-bottom: 40px solid #d4b896;
+        }
+        .seal {
+            width: 36px;
+            height: 36px;
+            background: radial-gradient(circle at 35% 35%, #e74c3c, #a93226);
+            border-radius: 50%;
+            border: 2px solid #922b21;
+            box-shadow: inset 0 -3px 6px rgba(0, 0, 0, 0.3);
+            z-index: 4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: #fdebd0;
+            position: absolute;
+            bottom: 30%;
+            left: 50%;
+            transform: translateX(-50%);
+            transition: all 0.6s ease;
+        }
+        .stamp {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 36px;
+            height: 44px;
+            background: linear-gradient(145deg, #e8d5b0, #d4b896);
+            border: 2px dashed #b8956a;
+            border-radius: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 9px;
+            color: #8b6b4a;
+            transform: rotate(6deg);
+            font-weight: 600;
+            z-index: 2;
+            transition: all 0.6s ease;
+        }
+        .address-line {
+            color: #5a3e2b;
+            font-size: 12px;
+            letter-spacing: 2px;
+            font-weight: 400;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 4px 16px;
+            border-radius: 4px;
+            z-index: 1;
+            transition: all 0.6s ease;
+        }
+        .envelope.folding .envelope-flap {
+            transform: rotateX(-180deg);
+        }
+        .envelope.folding .envelope-body {
+            transform: scale(0.9) rotateY(8deg) skewX(-2deg);
+            border-radius: 2px 12px 12px 2px;
+        }
+        .envelope.folding .seal {
+            opacity: 0;
+            transform: translateX(-50%) scale(0.3);
+        }
+        .envelope.folding .stamp {
+            opacity: 0;
+            transform: rotate(6deg) scale(0.5);
+        }
+        .envelope.folding .address-line {
+            opacity: 0;
+            transform: translateY(10px);
+        }
 
-    .envelope {
-      width: 100%;
-      height: 100%;
-      position: relative;
-      transform-style: preserve-3d;
-      transition: transform 1.2s cubic-bezier(.4, .2, .2, 1);
-    }
+        .particle-burst {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 10;
+            overflow: visible;
+        }
+        .particle-burst .p {
+            position: absolute;
+            border-radius: 50%;
+            box-shadow: 0 0 12px rgba(251, 191, 36, 0.6);
+            animation: burstOut 1.2s cubic-bezier(.25, .46, .45, .94) forwards;
+            opacity: 0;
+        }
+        @keyframes burstOut {
+            0% {
+                opacity: 1;
+                transform: translate(0, 0) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(var(--tx), var(--ty)) scale(0);
+            }
+        }
 
-    /* 信封主体 */
-    .envelope-body {
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(145deg, #f5e6c8, #e8d5b0);
-      border-radius: 6px;
-      border: 2px solid #d4b896;
-      position: relative;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      transition: all 0.8s ease;
-    }
+        #planeContainer {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            pointer-events: none;
+            overflow: visible;
+        }
+        #planeContainer svg {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            opacity: 0;
+            transition: none;
+            filter: drop-shadow(0 4px 20px rgba(251, 191, 36, 0.3));
+        }
+        #planeContainer svg.flying {
+            opacity: 1;
+            animation: planeFlyArc 4.2s cubic-bezier(.25, .46, .45, .94) forwards;
+        }
+        @keyframes planeFlyArc {
+            0% {
+                transform: translate(0, 0) rotate(0deg) scale(1);
+                opacity: 1;
+            }
+            15% {
+                transform: translate(60px, -80px) rotate(-12deg) scale(1.1);
+                opacity: 1;
+            }
+            40% {
+                transform: translate(180px, -250px) rotate(-18deg) scale(1.15);
+                opacity: 0.95;
+            }
+            65% {
+                transform: translate(350px, -380px) rotate(-8deg) scale(1.05);
+                opacity: 0.8;
+            }
+            85% {
+                transform: translate(520px, -500px) rotate(6deg) scale(0.7);
+                opacity: 0.5;
+            }
+            100% {
+                transform: translate(700px, -650px) rotate(20deg) scale(0.2);
+                opacity: 0;
+            }
+        }
 
-    /* 信封封口 flap（折痕） */
-    .envelope-flap {
-      position: absolute;
-      top: -2px;
-      left: -2px;
-      right: -2px;
-      height: 55%;
-      background: linear-gradient(180deg, #e8d5b0 0%, #f5e6c8 100%);
-      border-radius: 6px 6px 0 0;
-      border: 2px solid #d4b896;
-      border-bottom: none;
-      transform-origin: bottom center;
-      transition: transform 0.9s cubic-bezier(.4, .2, .2, 1);
-      z-index: 3;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .envelope-flap::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 0;
-      height: 0;
-      border-left: 60px solid transparent;
-      border-right: 60px solid transparent;
-      border-bottom: 40px solid #d4b896;
-    }
+        .final-card {
+            text-align: center;
+            padding: 40px 20px;
+        }
+        .final-card .title {
+            font-size: 30px;
+        }
+        .final-card .subtitle {
+            font-size: 17px;
+            line-height: 2.2;
+        }
+        .final-card .big-heart {
+            font-size: 60px;
+            display: block;
+            margin: 10px auto 16px;
+            animation: heartbeat 1.2s ease-in-out infinite;
+        }
+        @keyframes heartbeat {
+            0%,
+            100% {
+                transform: scale(1);
+            }
+            14% {
+                transform: scale(1.2);
+            }
+            28% {
+                transform: scale(1);
+            }
+            42% {
+                transform: scale(1.15);
+            }
+            56% {
+                transform: scale(1);
+            }
+        }
+        .status-text {
+            text-align: center;
+            margin-top: 12px;
+            font-size: 14px;
+            color: rgba(220, 230, 245, 0.5);
+            min-height: 28px;
+        }
 
-    /* 火漆印章 */
-    .seal {
-      width: 36px;
-      height: 36px;
-      background: radial-gradient(circle at 35% 35%, #e74c3c, #a93226);
-      border-radius: 50%;
-      border: 2px solid #922b21;
-      box-shadow: inset 0 -3px 6px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(0, 0, 0, 0.2);
-      z-index: 4;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 16px;
-      color: #fdebd0;
-      position: absolute;
-      bottom: 30%;
-      left: 50%;
-      transform: translateX(-50%);
-      transition: all 0.8s ease;
-    }
-
-    /* 邮票 */
-    .stamp {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      width: 36px;
-      height: 44px;
-      background: linear-gradient(145deg, #e8d5b0, #d4b896);
-      border: 2px dashed #b8956a;
-      border-radius: 2px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 9px;
-      color: #8b6b4a;
-      transform: rotate(6deg);
-      font-weight: 600;
-      letter-spacing: 0.5px;
-      z-index: 2;
-      transition: all 0.8s ease;
-    }
-
-    /* 地址文字 */
-    .address-line {
-      color: #5a3e2b;
-      font-size: 12px;
-      letter-spacing: 2px;
-      font-weight: 400;
-      background: rgba(255, 255, 255, 0.2);
-      padding: 4px 16px;
-      border-radius: 4px;
-      z-index: 1;
-      transition: all 0.8s ease;
-    }
-
-    /* ===== 折叠状态（信封变成纸飞机） ===== */
-    .envelope.folding .envelope-flap {
-      transform: rotateX(-180deg);
-    }
-    .envelope.folding .envelope-body {
-      transform: scale(0.85) rotateY(10deg) skewX(-3deg);
-      border-radius: 2px 12px 12px 2px;
-    }
-    .envelope.folding .seal {
-      opacity: 0;
-      transform: translateX(-50%) scale(0.3);
-    }
-    .envelope.folding .stamp {
-      opacity: 0;
-      transform: rotate(6deg) scale(0.5);
-    }
-    .envelope.folding .address-line {
-      opacity: 0;
-      transform: translateY(10px);
-    }
-
-    /* ===== 纸飞机飞行动画 ===== */
-    #planeContainer {
-      position: fixed;
-      inset: 0;
-      z-index: 100;
-      pointer-events: none;
-      overflow: visible;
-    }
-    #planeContainer svg {
-      position: absolute;
-      width: 80px;
-      height: 80px;
-      opacity: 0;
-      transition: none;
-      filter: drop-shadow(0 4px 20px rgba(251, 191, 36, 0.3));
-    }
-    #planeContainer svg.flying {
-      opacity: 1;
-      animation: planeFlyArc 4.5s cubic-bezier(.25, .46, .45, .94) forwards;
-    }
-
-    @keyframes planeFlyArc {
-      0% {
-        transform: translate(0, 0) rotate(0deg) scale(1);
-        opacity: 1;
-      }
-      15% {
-        transform: translate(60px, -80px) rotate(-12deg) scale(1.1);
-        opacity: 1;
-      }
-      40% {
-        transform: translate(180px, -250px) rotate(-18deg) scale(1.15);
-        opacity: 0.95;
-      }
-      65% {
-        transform: translate(350px, -380px) rotate(-8deg) scale(1.05);
-        opacity: 0.8;
-      }
-      85% {
-        transform: translate(520px, -500px) rotate(6deg) scale(0.7);
-        opacity: 0.5;
-      }
-      100% {
-        transform: translate(700px, -650px) rotate(20deg) scale(0.2);
-        opacity: 0;
-      }
-    }
-
-    /* ===== 静候佳音卡片 ===== */
-    .final-card {
-      text-align: center;
-      padding: 40px 20px;
-    }
-    .final-card .title {
-      font-size: 30px;
-    }
-    .final-card .subtitle {
-      font-size: 17px;
-      line-height: 2.2;
-    }
-    .final-card .big-heart {
-      font-size: 60px;
-      display: block;
-      margin: 10px auto 16px;
-      animation: heartbeat 1.2s ease-in-out infinite;
-    }
-    @keyframes heartbeat {
-      0%,
-      100% {
-        transform: scale(1);
-      }
-      14% {
-        transform: scale(1.2);
-      }
-      28% {
-        transform: scale(1);
-      }
-      42% {
-        transform: scale(1.15);
-      }
-      56% {
-        transform: scale(1);
-      }
-    }
-    /* ===== 状态文字 ===== */
-    .status-text {
-      text-align: center;
-      margin-top: 12px;
-      font-size: 14px;
-      color: rgba(220, 230, 245, 0.5);
-      min-height: 28px;
-      transition: all 0.3s ease;
-    }
-  </style>
+        @media (max-width: 480px) {
+            .overlay {
+                padding: 20px 12px 40px;
+            }
+            .card {
+                padding: 20px 16px;
+            }
+            .title {
+                font-size: 22px;
+            }
+            .btn {
+                font-size: 15px;
+                padding: 13px 0;
+            }
+            .preview-grid {
+                gap: 8px;
+            }
+        }
+    </style>
 </head>
 <body>
 
-  <!-- ===== 加载遮罩 ===== -->
-  <div id="loading-mask">✨ 正在打开 · 送给老爸</div>
+    <div id="loading-mask">✨ 正在打开 · 送给老爸</div>
+    <canvas id="particleCanvas"></canvas>
+    <canvas id="heartCanvas"></canvas>
 
-  <canvas id="particleCanvas"></canvas>
-  <canvas id="heartCanvas"></canvas>
-
-  <!-- ===== 纸飞机容器 ===== -->
-  <div id="planeContainer">
-    <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M10 50 L40 20 L70 10 L60 40 L90 70 L60 60 L50 90 L20 60 L10 50Z" fill="#fbbf24" stroke="#d97706" stroke-width="2" />
-      <path d="M40 20 L60 40 L50 90 L20 60 L10 50L40 20Z" fill="#fcd34d" stroke="#d97706" stroke-width="1.5" opacity="0.7" />
-      <circle cx="45" cy="45" r="6" fill="#1e293b" opacity="0.3" />
-      <line x1="10" y1="50" x2="40" y2="20" stroke="#f59e0b" stroke-width="1.5" stroke-linecap="round" />
-      <line x1="60" y1="40" x2="90" y2="70" stroke="#f59e0b" stroke-width="1.5" stroke-linecap="round" />
-    </svg>
-  </div>
-
-  <div class="overlay">
-    <div class="container" id="cardContainer">
-
-      <!-- ===== 卡片1-7 完整保留（省略显示，实际代码里完整） ===== -->
-      <div class="card">
-        <div class="title">🎂 老爸，生日快乐</div>
-        <div class="subtitle">您是我心中最酷的人<br><span class="highlight">感谢您为这个家付出的一切</span></div>
-        <a href="tel:13888888888" class="btn">📞 给老爸打个电话</a>
-        <div class="tags">
-          <span class="tag">🛠 家里的万能工</span>
-          <span class="tag">🧑‍🍳 大厨级手艺</span>
-          <span class="tag">😂 幽默担当</span>
-          <span class="tag">❤️ 超级英雄</span>
-        </div>
-        <div class="bless-quote">
-          <span>🎉</span><span>身体健康</span><span>🎉</span>
-          <span>天天开心</span><span>🎉</span>
-          <span>万事如意</span><span>🎉</span>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="title">❤️ 给爸爸的一封信</div>
-        <div class="subtitle" style="text-align: left; padding: 0 4px; line-height: 2.2; font-size: 15px;">
-          亲爱的爸爸：<br><br>
-          今天是您的生日，我想把心里藏了很久的话，都写在这里。<br><br>
-          小时候，觉得您是超人，什么都会修，什么都能扛。<br>
-          长大后才发现，您不是不怕累，只是从不在我们面前喊累。<br><br>
-          您用那双粗糙的手，撑起了我们的家；<br>
-          用那副宽厚的肩膀，挡住了所有的风雨。<br><br>
-          您的白发和皱纹，都是岁月留下的勋章，<br>
-          每一道都刻着对我们的爱。<br><br>
-          现在我已经长大了，<br>
-          换我来为您遮风挡雨，换我来守护这个家。<br><br>
-          爸爸，您辛苦了。<br>
-          <span style="color: #fbbf24; font-weight: 500;">祝您生日快乐，身体健康，天天开心！</span>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="title">📸 我们的全家福</div>
-        <div class="subtitle" style="margin-bottom: 8px; font-size: 13px;">每一张照片，都是我们最珍贵的时光</div>
-        <div class="preview-grid">
-          <img class="preview-img" src="family1.jpg" alt="全家福1" />
-          <img class="preview-img" src="family2.jpg" alt="全家福2" />
-          <img class="preview-img" src="family3.jpg" alt="全家福3" />
-          <img class="preview-img" src="family4.jpg" alt="全家福4" />
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="title">🏠 我们的家</div>
-        <div class="subtitle" style="text-align: left; padding: 0 4px; line-height: 2.2; font-size: 15px;">
-          从 <span style="color: #fbbf24; font-weight: 500;">1987年7月29日</span> 开始，<br>
-          这个家有了你，有了我，有了我们。<br><br>
-          三十多年的风风雨雨，<br>
-          你从未缺席，也从未后退。<br><br>
-          你教我的那些道理，<br>
-          我到现在都记得：<br>
-          <span style="color: #fde68a;">"做人要踏实，做事要认真，对家人要好。"</span><br><br>
-          老爸，你是这个家的顶梁柱，<br>
-          也是我永远的英雄。
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="title">🌟 我眼中的您</div>
-        <div class="tags" style="margin-top: 6px;">
-          <span class="tag">💪 坚强如山</span>
-          <span class="tag">🧑‍🍳 厨艺超棒</span>
-          <span class="tag">🎵 歌声动人</span>
-          <span class="tag">🛠 什么都会修</span>
-          <span class="tag">😂 幽默风趣</span>
-          <span class="tag">❤️ 善良温暖</span>
-          <span class="tag">📖 有智慧</span>
-          <span class="tag">🏆 我的榜样</span>
-          <span class="tag">🤝 重情重义</span>
-          <span class="tag">🙏 懂得感恩</span>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="title">🎁 生日祝福墙</div>
-        <div class="subtitle" style="line-height: 2.4; font-size: 15px;">
-          🎂 愿您岁岁平安，健康长寿<br>
-          🌞 愿您每天都笑得像个孩子<br>
-          💛 愿您少操心，多享福<br>
-          🍜 愿您每天都能吃上热乎饭<br>
-          🚶 愿您有空多出去走走<br>
-          📖 愿您把年轻时没空看的书都看完<br>
-          🎵 愿您喜欢的歌一直唱下去<br>
-          ❤️ 愿您知道，我们永远爱您
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="title">🌅 最后想说的话</div>
-        <div class="subtitle" style="text-align: left; padding: 0 4px; line-height: 2.2; font-size: 15px;">
-          爸爸，谢谢您做我的父亲。<br><br>
-          谢谢您教会我走路、骑车、做人。<br>
-          谢谢您在我跌倒的时候，从不伸手拉我，<br>
-          而是站在旁边说："站起来，你可以的。"<br><br>
-          那些年我觉得您狠心，<br>
-          现在才明白，那是您给我最珍贵的礼物——<br>
-          <span style="color: #fbbf24; font-weight: 500;">独立和坚强。</span><br><br>
-          未来的路，换我陪您走。<br>
-          您陪我长大，我陪您变老。<br><br>
-          <span style="color: #fde68a; font-size: 18px; font-weight: 500;">老爸，生日快乐！</span><br>
-          <span style="color: #fcd34d; font-size: 14px;">—— 永远爱您的孩子</span>
-        </div>
-      </div>
-
-      <!-- ============================================================
-      🆕 卡片8：许愿卡
-      ============================================================ -->
-      <div class="card" id="wishCard">
-        <div class="title">🕯️ 许个愿吧</div>
-        <div class="subtitle" style="margin-bottom: 4px;">写下您最想实现的愿望</div>
-        <textarea class="wish-textarea" id="wishInput" placeholder="例如：希望全家人身体健康…"></textarea>
-        <button class="btn" id="submitWishBtn">📮 寄出愿望</button>
-        <div style="text-align:center;margin-top:10px;font-size:13px;color:rgba(255,255,255,0.2);">
-          愿望会变成纸飞机飞向远方 ✈️
-        </div>
-      </div>
-
-      <!-- ============================================================
-      🆕 卡片9：信封 → 纸飞机 折叠动画卡片
-      ============================================================ -->
-      <div class="card" id="envelopeCard" style="display:none;">
-        <div class="title">📮 你的愿望已装好</div>
-        <div class="envelope-wrapper active" id="envelopeWrapper">
-          <div class="envelope" id="envelope">
-            <div class="envelope-body">
-              <div class="stamp">📬 加急</div>
-              <div class="address-line">致 · 未来的你</div>
-              <div class="seal">✉️</div>
-            </div>
-            <div class="envelope-flap"></div>
-          </div>
-        </div>
-        <div class="status-text" id="envelopeStatus">📮 正在封装你的愿望...</div>
-      </div>
-
-      <!-- ============================================================
-      🆕 卡片10：静候佳音
-      ============================================================ -->
-      <div class="card" id="finalCard" style="display:none;">
-        <div class="final-card">
-          <span class="big-heart">💛</span>
-          <div class="title">静候佳音</div>
-          <div class="subtitle">
-            愿望已经寄出<br>
-            它会穿越时光，在最好的时刻抵达<br><br>
-            <span style="color: #fbbf24; font-size: 14px;">—— 愿你所有的愿望，都能如愿以偿 ——</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="footer-note">🎁 送给最亲爱的爸爸 · 2026</div>
-
+    <div id="planeContainer">
+        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M10 50 L40 20 L70 10 L60 40 L90 70 L60 60 L50 90 L20 60 L10 50Z" fill="#fbbf24" stroke="#d97706" stroke-width="2" />
+            <path d="M40 20 L60 40 L50 90 L20 60 L10 50L40 20Z" fill="#fcd34d" stroke="#d97706" stroke-width="1.5" opacity="0.7" />
+            <circle cx="45" cy="45" r="6" fill="#1e293b" opacity="0.3" />
+            <line x1="10" y1="50" x2="40" y2="20" stroke="#f59e0b" stroke-width="1.5" stroke-linecap="round" />
+            <line x1="60" y1="40" x2="90" y2="70" stroke="#f59e0b" stroke-width="1.5" stroke-linecap="round" />
+        </svg>
     </div>
-  </div>
 
-  <audio id="bgm" src="bgm.mp3" preload="none"></audio>
+    <div class="overlay">
+        <div class="container" id="cardContainer">
 
-  <script>
-    // ============================================================
-    // 0. 加载遮罩 + 卡片滚动入场
-    // ============================================================
-    window.addEventListener('load', () => {
-      setTimeout(() => {
-        document.getElementById('loading-mask').classList.add('hide');
-      }, 400);
-    });
+            <!-- ===== 卡片1-7（你的原有内容） ===== -->
+            <div class="card">
+                <div class="title">🎂 老爸，生日快乐</div>
+                <div class="subtitle">您是我心中最酷的人<br><span class="highlight">感谢您为这个家付出的一切</span></div>
+                <a href="tel:13888888888" class="btn">📞 给老爸打个电话</a>
+                <div class="tags">
+                    <span class="tag">🛠 家里的万能工</span>
+                    <span class="tag">🧑‍🍳 大厨级手艺</span>
+                    <span class="tag">😂 幽默担当</span>
+                    <span class="tag">❤️ 超级英雄</span>
+                </div>
+                <div class="bless-quote">
+                    <span>🎉</span><span>身体健康</span><span>🎉</span>
+                    <span>天天开心</span><span>🎉</span>
+                    <span>万事如意</span><span>🎉</span>
+                </div>
+            </div>
 
-    const cards = document.querySelectorAll('.card');
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-        }
-      });
-    }, { threshold: 0.15, rootMargin: '0px 0px -20px 0px' });
+            <div class="card">
+                <div class="title">❤️ 给爸爸的一封信</div>
+                <div class="subtitle" style="text-align: left; padding: 0 4px; line-height: 2.2; font-size: 15px;">
+                    亲爱的爸爸：<br><br>
+                    今天是您的生日，我想把心里藏了很久的话，都写在这里。<br><br>
+                    小时候，觉得您是超人，什么都会修，什么都能扛。<br>
+                    长大后才发现，您不是不怕累，只是从不在我们面前喊累。<br><br>
+                    您用那双粗糙的手，撑起了我们的家；<br>
+                    用那副宽厚的肩膀，挡住了所有的风雨。<br><br>
+                    您的白发和皱纹，都是岁月留下的勋章，<br>
+                    每一道都刻着对我们的爱。<br><br>
+                    现在我已经长大了，<br>
+                    换我来为您遮风挡雨，换我来守护这个家。<br><br>
+                    爸爸，您辛苦了。<br>
+                    <span style="color: #fbbf24; font-weight: 500;">祝您生日快乐，身体健康，天天开心！</span>
+                </div>
+            </div>
 
-    cards.forEach((card, index) => {
-      card.style.transitionDelay = (index * 0.08) + 's';
-      observer.observe(card);
-    });
+            <div class="card">
+                <div class="title">📸 我们的全家福</div>
+                <div class="subtitle" style="margin-bottom: 8px; font-size: 13px;">每一张照片，都是我们最珍贵的时光</div>
+                <div class="preview-grid">
+                    <img class="preview-img" src="family1.jpg" alt="全家福1" />
+                    <img class="preview-img" src="family2.jpg" alt="全家福2" />
+                    <img class="preview-img" src="family3.jpg" alt="全家福3" />
+                    <img class="preview-img" src="family4.jpg" alt="全家福4" />
+                </div>
+            </div>
 
-    // ============================================================
-    // 🆕 愿望 → 信封折叠 → 纸飞机 → 静候佳音（完整流程）
-    // ============================================================
-    const wishCard = document.getElementById('wishCard');
-    const envelopeCard = document.getElementById('envelopeCard');
-    const finalCard = document.getElementById('finalCard');
-    const wishInput = document.getElementById('wishInput');
-    const submitBtn = document.getElementById('submitWishBtn');
-    const envelopeStatus = document.getElementById('envelopeStatus');
-    const envelope = document.getElementById('envelope');
-    const planeContainer = document.getElementById('planeContainer');
-    const planeSvg = planeContainer.querySelector('svg');
+            <div class="card">
+                <div class="title">🏠 我们的家</div>
+                <div class="subtitle" style="text-align: left; padding: 0 4px; line-height: 2.2; font-size: 15px;">
+                    从 <span style="color: #fbbf24; font-weight: 500;">1987年7月29日</span> 开始，<br>
+                    这个家有了你，有了我，有了我们。<br><br>
+                    三十多年的风风雨雨，<br>
+                    你从未缺席，也从未后退。<br><br>
+                    你教我的那些道理，<br>
+                    我到现在都记得：<br>
+                    <span style="color: #fde68a;">"做人要踏实，做事要认真，对家人要好。"</span><br><br>
+                    老爸，你是这个家的顶梁柱，<br>
+                    也是我永远的英雄。
+                </div>
+            </div>
 
-    let isProcessing = false;
+            <div class="card">
+                <div class="title">🌟 我眼中的您</div>
+                <div class="tags" style="margin-top: 6px;">
+                    <span class="tag">💪 坚强如山</span>
+                    <span class="tag">🧑‍🍳 厨艺超棒</span>
+                    <span class="tag">🎵 歌声动人</span>
+                    <span class="tag">🛠 什么都会修</span>
+                    <span class="tag">😂 幽默风趣</span>
+                    <span class="tag">❤️ 善良温暖</span>
+                    <span class="tag">📖 有智慧</span>
+                    <span class="tag">🏆 我的榜样</span>
+                    <span class="tag">🤝 重情重义</span>
+                    <span class="tag">🙏 懂得感恩</span>
+                </div>
+            </div>
 
-    // 获取信封中心位置（用于纸飞机起飞点）
-    function getEnvelopeCenter() {
-      const rect = envelopeCard.getBoundingClientRect();
-      return {
-        x: rect.left + rect.width / 2 - 40,
-        y: rect.top + rect.height / 2 - 40
-      };
-    }
+            <div class="card">
+                <div class="title">🎁 生日祝福墙</div>
+                <div class="subtitle" style="line-height: 2.4; font-size: 15px;">
+                    🎂 愿您岁岁平安，健康长寿<br>
+                    🌞 愿您每天都笑得像个孩子<br>
+                    💛 愿您少操心，多享福<br>
+                    🍜 愿您每天都能吃上热乎饭<br>
+                    🚶 愿您有空多出去走走<br>
+                    📖 愿您把年轻时没空看的书都看完<br>
+                    🎵 愿您喜欢的歌一直唱下去<br>
+                    ❤️ 愿您知道，我们永远爱您
+                </div>
+            </div>
 
-    // 状态文字序列（配合折叠动画）
-    const statusSteps = [
-      { text: '📮 正在封装你的愿望...', delay: 0 },
-      { text: '✉️ 盖上火漆印章...', delay: 600 },
-      { text: '📬 贴好邮票...', delay: 1200 },
-      { text: '🔄 信封正在折叠成纸飞机...', delay: 1800 },
-      { text: '✈️ 准备起飞...', delay: 2600 },
-    ];
+            <div class="card">
+                <div class="title">🌅 最后想说的话</div>
+                <div class="subtitle" style="text-align: left; padding: 0 4px; line-height: 2.2; font-size: 15px;">
+                    爸爸，谢谢您做我的父亲。<br><br>
+                    谢谢您教会我走路、骑车、做人。<br>
+                    谢谢您在我跌倒的时候，从不伸手拉我，<br>
+                    而是站在旁边说："站起来，你可以的。"<br><br>
+                    那些年我觉得您狠心，<br>
+                    现在才明白，那是您给我最珍贵的礼物——<br>
+                    <span style="color: #fbbf24; font-weight: 500;">独立和坚强。</span><br><br>
+                    未来的路，换我陪您走。<br>
+                    您陪我长大，我陪您变老。<br><br>
+                    <span style="color: #fde68a; font-size: 18px; font-weight: 500;">老爸，生日快乐！</span><br>
+                    <span style="color: #fcd34d; font-size: 14px;">—— 永远爱您的孩子</span>
+                </div>
+            </div>
+                        <!-- ===== 🆕 卡片8：许愿卡 ===== -->
+            <div class="card" id="wishCard">
+                <div class="title">🕯️ 许个愿吧</div>
+                <div class="subtitle" style="margin-bottom: 4px;">写下您最想实现的愿望</div>
+                <textarea class="wish-textarea" id="wishInput" placeholder="例如：希望全家人身体健康…"></textarea>
+                <button class="btn" id="submitWishBtn">📮 寄出愿望</button>
+                <div style="text-align:center;margin-top:10px;font-size:13px;color:rgba(255,255,255,0.2);">
+                    愿望会变成纸飞机飞向远方 ✈️
+                </div>
+            </div>
 
-    submitBtn.addEventListener('click', () => {
-      if (isProcessing) return;
-      const wishText = wishInput.value.trim();
-      if (!wishText) {
-        wishInput.style.borderColor = '#ef4444';
-        wishInput.placeholder = '✍️ 写点什么吧...';
-        setTimeout(() => {
-          wishInput.style.borderColor = 'rgba(251, 191, 36, 0.2)';
-        }, 2000);
-        return;
-      }
+            <!-- ===== 🆕 卡片9：信封 → 粒子消散 → 纸飞机 ===== -->
+            <div class="card" id="envelopeCard" style="display:none;">
+                <div class="title">📮 你的愿望已装好</div>
+                <div class="envelope-wrapper active" id="envelopeWrapper">
+                    <div class="envelope" id="envelope">
+                        <div class="envelope-body">
+                            <div class="stamp">📬 加急</div>
+                            <div class="address-line">致 · 未来的你</div>
+                            <div class="seal">✉️</div>
+                        </div>
+                        <div class="envelope-flap"></div>
+                        <div class="particle-burst" id="particleBurst"></div>
+                    </div>
+                </div>
+                <div class="status-text" id="envelopeStatus">📮 正在封装你的愿望...</div>
+            </div>
 
-      isProcessing = true;
-      submitBtn.textContent = '📮 正在寄出...';
-      submitBtn.style.opacity = '0.5';
+            <!-- ===== 🆕 卡片10：静候佳音 ===== -->
+            <div class="card" id="finalCard" style="display:none;">
+                <div class="final-card">
+                    <span class="big-heart">💛</span>
+                    <div class="title">静候佳音</div>
+                    <div class="subtitle">
+                        愿望已经寄出<br>
+                        它会穿越时光，在最好的时刻抵达<br><br>
+                        <span style="color: #fbbf24; font-size: 14px;">—— 愿你所有的愿望，都能如愿以偿 ——</span>
+                    </div>
+                </div>
+            </div>
 
-      // ---- 第一步：隐藏许愿卡，显示信封卡 ----
-      setTimeout(() => {
-        wishCard.style.display = 'none';
-        envelopeCard.style.display = 'block';
-        // 触发入场动画
-        setTimeout(() => {
-          envelopeCard.classList.add('visible');
-        }, 50);
+            <div class="footer-note">🎁 送给最亲爱的爸爸 · 2026</div>
 
-        // ---- 第二步：逐步更新状态文字 ----
-        statusSteps.forEach((step) => {
-          setTimeout(() => {
-            envelopeStatus.textContent = step.text;
-          }, step.delay);
+        </div>
+    </div>
+
+    <audio id="bgm" src="bgm.mp3" preload="none"></audio>
+
+    <script>
+        // ===== 加载遮罩 =====
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('loading-mask').classList.add('hide');
+            }, 400);
         });
 
-        // ---- 第三步：折叠信封（变成纸飞机） ----
-        setTimeout(() => {
-          envelope.classList.add('folding');
-        }, 1800);
-
-        // ---- 第四步：纸飞机起飞 ----
-        setTimeout(() => {
-          envelopeStatus.textContent = '✈️ 飞向远方...';
-
-          const pos = getEnvelopeCenter();
-          planeSvg.style.left = pos.x + 'px';
-          planeSvg.style.top = pos.y + 'px';
-          planeSvg.style.opacity = '1';
-          planeSvg.style.transform = 'rotate(0deg) scale(1)';
-
-          requestAnimationFrame(() => {
-            planeSvg.classList.add('flying');
-          });
-
-          // ---- 第五步：纸飞机飞走后，显示静候佳音 ----
-          setTimeout(() => {
-            envelopeCard.style.display = 'none';
-            finalCard.style.display = 'block';
-            setTimeout(() => {
-              finalCard.classList.add('visible');
-            }, 50);
-
-            // 重置纸飞机状态
-            setTimeout(() => {
-              planeSvg.classList.remove('flying');
-              planeSvg.style.opacity = '0';
-              planeSvg.style.left = '0';
-              planeSvg.style.top = '0';
-              planeSvg.style.transform = 'none';
-            }, 400);
-
-            // 重置按钮
-            submitBtn.textContent = '📮 寄出愿望';
-            submitBtn.style.opacity = '1';
-            isProcessing = false;
-
-            // 重置信封折叠状态（以便下次体验）
-            setTimeout(() => {
-              envelope.classList.remove('folding');
-            }, 100);
-
-          }, 4800);
-
-        }, 2800);
-
-      }, 600);
-    });
-
-    // ============================================================
-    // 1. 底层粒子（完整保留）
-    // ============================================================
-    const canvas = document.getElementById('particleCanvas');
-    const ctx = canvas.getContext('2d');
-    let width = window.innerWidth;
-    let height = window.innerHeight;
-    canvas.width = width;
-    canvas.height = height;
-
-    const particles = [];
-    const COUNT = 100;
-    let gyroX = 0,
-      gyroY = 0;
-    let targetGX = 0,
-      targetGY = 0;
-
-    class Particle {
-      constructor() {
-        this.x = Math.random() * width;
-        this.y = Math.random() * height;
-        this.size = 2.5 + Math.random() * 4.5;
-        this.baseX = this.x;
-        this.baseY = this.y;
-        this.wanderRadius = 50 + Math.random() * 80;
-        this.wanderSpeed = 0.005 + Math.random() * 0.008;
-        this.angle = Math.random() * Math.PI * 2;
-        this.alpha = 0.4 + Math.random() * 0.6;
-        this.hue = Math.random() * 360;
-      }
-      update() {
-        const driftX = gyroX * 3.5;
-        const driftY = gyroY * 3.5;
-        this.angle += this.wanderSpeed;
-        const wanderX = Math.sin(this.angle) * this.wanderRadius * 0.015;
-        const wanderY = Math.cos(this.angle * 0.7) * this.wanderRadius * 0.015;
-        const targetX = this.baseX + wanderX + driftX * 25;
-        const targetY = this.baseY + wanderY + driftY * 25;
-        this.x += (targetX - this.x) * 0.05;
-        this.y += (targetY - this.y) * 0.05;
-        if (this.x < -50) this.x = width + 50;
-        if (this.x > width + 50) this.x = -50;
-        if (this.y < -50) this.y = height + 50;
-        if (this.y > height + 50) this.y = -50;
-      }
-      draw() {
-        const hue = this.hue + Date.now() * 0.01;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fillStyle = `hsla(${hue}, 85%, 65%, ${this.alpha * 0.8})`;
-        ctx.fill();
-        const glow = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size * 2);
-        glow.addColorStop(0, `hsla(${hue}, 90%, 70%, 0.15)`);
-        glow.addColorStop(1, `hsla(${hue}, 90%, 70%, 0)`);
-        ctx.fillStyle = glow;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size * 2, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    }
-
-    for (let i = 0; i < COUNT; i++) {
-      particles.push(new Particle());
-    }
-
-    function drawLines() {
-      for (let i = 0; i < particles.length; i++) {
-        for (let j = i + 1; j < particles.length; j++) {
-          const dx = particles[i].x - particles[j].x;
-          const dy = particles[i].y - particles[j].y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 120) {
-            const alpha = (1 - dist / 120) * 0.2;
-            const hue = (i / particles.length) * 360 + Date.now() * 0.01;
-            ctx.beginPath();
-            ctx.moveTo(particles[i].x, particles[i].y);
-            ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.strokeStyle = `hsla(${hue}, 70%, 60%, ${alpha})`;
-            ctx.lineWidth = 1;
-            ctx.stroke();
-          }
-        }
-      }
-    }
-
-    function animate() {
-      ctx.clearRect(0, 0, width, height);
-      for (const p of particles) p.update();
-      drawLines();
-      for (const p of particles) p.draw();
-      requestAnimationFrame(animate);
-    }
-    animate();
-
-    window.addEventListener('resize', () => {
-      width = window.innerWidth;
-      height = window.innerHeight;
-      canvas.width = width;
-      canvas.height = height;
-    }, { passive: true });
-
-    // ===== 陀螺仪 =====
-    if (window.DeviceOrientationEvent) {
-      window.addEventListener('deviceorientation', (e) => {
-        const beta = e.beta || 0;
-        const gamma = e.gamma || 0;
-        targetGX = Math.max(-1, Math.min(1, gamma / 45));
-        targetGY = Math.max(-1, Math.min(1, beta / 45));
-      });
-      if (typeof DeviceOrientationEvent.requestPermission === 'function') {
-        DeviceOrientationEvent.requestPermission().then(state => {
-          if (state === 'granted') {
-            window.addEventListener('deviceorientation', (e) => {
-              const beta = e.beta || 0;
-              const gamma = e.gamma || 0;
-              targetGX = Math.max(-1, Math.min(1, gamma / 45));
-              targetGY = Math.max(-1, Math.min(1, beta / 45));
+        // ===== 卡片滚动入场 =====
+        const cards = document.querySelectorAll('.card');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
             });
-          }
-        }).catch(() => {});
-      }
-    }
+        }, { threshold: 0.15, rootMargin: '0px 0px -20px 0px' });
 
-    setInterval(() => {
-      gyroX += (targetGX - gyroX) * 0.12;
-      gyroY += (targetGY - gyroY) * 0.12;
-    }, 30);
+        cards.forEach((card, index) => {
+            card.style.transitionDelay = (index * 0.08) + 's';
+            observer.observe(card);
+        });
 
-    let autoDrift = 0;
-    setInterval(() => {
-      if (!window.DeviceOrientationEvent) {
-        autoDrift += 0.003;
-        targetGX = Math.sin(autoDrift) * 0.8;
-        targetGY = Math.cos(autoDrift * 0.7) * 0.6;
-      }
-    }, 50);
+        // ===== 愿望 → 信封 → 粒子消散 → 纸飞机 =====
+        const wishCard = document.getElementById('wishCard');
+        const envelopeCard = document.getElementById('envelopeCard');
+        const finalCard = document.getElementById('finalCard');
+        const wishInput = document.getElementById('wishInput');
+        const submitBtn = document.getElementById('submitWishBtn');
+        const envelopeStatus = document.getElementById('envelopeStatus');
+        const envelope = document.getElementById('envelope');
+        const particleBurst = document.getElementById('particleBurst');
+        const planeContainer = document.getElementById('planeContainer');
+        const planeSvg = planeContainer.querySelector('svg');
 
-    // ============================================================
-    // 2. 爱心飘落（完整保留）
-    // ============================================================
-    const heartCanvas = document.getElementById('heartCanvas');
-    const hCtx = heartCanvas.getContext('2d');
-    let hW = window.innerWidth;
-    let hH = window.innerHeight;
-    heartCanvas.width = hW;
-    heartCanvas.height = hH;
+        let isProcessing = false;
 
-    const hearts = [];
-    const HEART_COUNT = 35;
-
-    class Heart {
-      constructor() {
-        this.reset();
-        this.y = Math.random() * hH;
-        this.size = 14 + Math.random() * 20;
-        this.opacity = 0.2 + Math.random() * 0.4;
-        this.hue = 340 + Math.random() * 30;
-      }
-      reset() {
-        this.x = Math.random() * hW;
-        this.y = -20;
-        this.size = 14 + Math.random() * 20;
-        this.speed = 0.5 + Math.random() * 1.0;
-        this.wind = (Math.random() - 0.5) * 0.5;
-        this.opacity = 0.2 + Math.random() * 0.4;
-        this.hue = 340 + Math.random() * 30;
-        this.swing = Math.random() * Math.PI * 2;
-        this.swingSpeed = 0.01 + Math.random() * 0.02;
-      }
-      update() {
-        this.y += this.speed;
-        this.swing += this.swingSpeed;
-        this.x += this.wind + Math.sin(this.swing) * 0.3;
-        if (this.y > hH + 20) {
-          this.reset();
-          this.y = -20;
+        function getEnvelopeCenter() {
+            const rect = envelopeCard.getBoundingClientRect();
+            return {
+                x: rect.left + rect.width / 2 - 40,
+                y: rect.top + rect.height / 2 - 40
+            };
         }
-        if (this.x > hW + 20) this.x = -20;
-        if (this.x < -20) this.x = hW + 20;
-      }
-      draw() {
-        const s = this.size;
-        const x = this.x;
-        const y = this.y;
-        const alpha = this.opacity;
-        hCtx.save();
-        hCtx.globalAlpha = alpha;
-        hCtx.translate(x, y);
-        hCtx.beginPath();
-        hCtx.moveTo(0, s * 0.3);
-        hCtx.bezierCurveTo(-s * 0.6, -s * 0.3, -s * 0.8, s * 0.4, 0, s * 0.9);
-        hCtx.bezierCurveTo(s * 0.8, s * 0.4, s * 0.6, -s * 0.3, 0, s * 0.3);
-        hCtx.closePath();
-        hCtx.fillStyle = `hsla(${this.hue}, 85%, 65%, 1)`;
-        hCtx.fill();
-        hCtx.shadowColor = `hsla(${this.hue}, 90%, 70%, 0.5)`;
-        hCtx.shadowBlur = 15;
-        hCtx.restore();
-      }
-    }
 
-    for (let i = 0; i < HEART_COUNT; i++) {
-      hearts.push(new Heart());
-    }
+        function triggerParticleBurst() {
+            const rect = envelope.getBoundingClientRect();
+            const cx = rect.width / 2;
+            const cy = rect.height / 2;
+            particleBurst.innerHTML = '';
+            const count = 60;
+            const colors = ['#fbbf24', '#f59e0b', '#f97316', '#fcd34d', '#fde68a'];
+            for (let i = 0; i < count; i++) {
+                const p = document.createElement('div');
+                p.className = 'p';
+                const angle = Math.random() * Math.PI * 2;
+                const radius = 80 + Math.random() * 160;
+                const tx = Math.cos(angle) * radius;
+                const ty = Math.sin(angle) * radius - 40;
+                const size = 4 + Math.random() * 10;
+                const color1 = colors[Math.floor(Math.random() * colors.length)];
+                const color2 = ['#d97706', '#b45309', '#f59e0b'][Math.floor(Math.random() * 3)];
+                p.style.cssText =
+                    `left:${cx}px;top:${cy}px;width:${size}px;height:${size}px;--tx:${tx}px;--ty:${ty}px;animation-delay:${Math.random()*0.15}s;background:radial-gradient(circle,${color1},${color2});`;
+                particleBurst.appendChild(p);
+            }
+            setTimeout(() => { particleBurst.innerHTML = ''; }, 1600);
+        }
 
-    function animateHearts() {
-      hCtx.clearRect(0, 0, hW, hH);
-      for (const h of hearts) {
-        h.update();
-        h.draw();
-      }
-      requestAnimationFrame(animateHearts);
-    }
-    animateHearts();
+        const statusSteps = [
+            { text: '📮 正在封装你的愿望...', delay: 0 },
+            { text: '✉️ 盖上火漆印章...', delay: 600 },
+            { text: '📬 贴好邮票...', delay: 1200 },
+            { text: '🔄 信封正在折叠...', delay: 1800 },
+            { text: '✨ 化作星光飞向远方...', delay: 2600 },
+        ];
 
-    window.addEventListener('resize', () => {
-      hW = heartCanvas.width = window.innerWidth;
-      hH = heartCanvas.height = window.innerHeight;
-    }, { passive: true });
+        submitBtn.addEventListener('click', () => {
+            if (isProcessing) return;
+            const wishText = wishInput.value.trim();
+            if (!wishText) {
+                wishInput.style.borderColor = '#ef4444';
+                wishInput.placeholder = '✍️ 写点什么吧...';
+                setTimeout(() => {
+                    wishInput.style.borderColor = 'rgba(251,191,36,0.2)';
+                }, 2000);
+                return;
+            }
+            isProcessing = true;
+            submitBtn.textContent = '📮 正在寄出...';
+            submitBtn.style.opacity = '0.5';
 
-    // ============================================================
-    // 3. BGM：滑动触发播放
-    // ============================================================
-    const audioEl = document.getElementById('bgm');
-    if (audioEl) {
-      let bgmStarted = false;
-      const tryPlayBGM = () => {
-        if (bgmStarted) return;
-        audioEl.play().then(() => {
-          bgmStarted = true;
-          document.removeEventListener('scroll', tryPlayBGM);
-          document.removeEventListener('touchstart', tryPlayBGM);
-          document.removeEventListener('click', tryPlayBGM);
-        }).catch(() => {});
-      };
-      document.addEventListener('scroll', tryPlayBGM, { passive: true });
-      document.addEventListener('touchstart', tryPlayBGM, { passive: true });
-      document.addEventListener('click', tryPlayBGM);
-    }
-  </script>
+            setTimeout(() => {
+                wishCard.style.display = 'none';
+                envelopeCard.style.display = 'block';
+                setTimeout(() => { envelopeCard.classList.add('visible'); }, 50);
+                statusSteps.forEach((step) => {
+                    setTimeout(() => { envelopeStatus.textContent = step.text; }, step.delay);
+                });
+                setTimeout(() => { envelope.classList.add('folding'); }, 1800);
+                setTimeout(() => {
+                    triggerParticleBurst();
+                    setTimeout(() => { envelope.style.opacity = '0'; }, 200);
+                }, 2700);
+                setTimeout(() => {
+                    envelopeStatus.textContent = '✈️ 飞向远方...';
+                    const pos = getEnvelopeCenter();
+                    planeSvg.style.left = pos.x + 'px';
+                    planeSvg.style.top = pos.y + 'px';
+                    planeSvg.style.opacity = '1';
+                    planeSvg.style.transform = 'rotate(0deg) scale(1)';
+                    requestAnimationFrame(() => { planeSvg.classList.add('flying'); });
+                    setTimeout(() => {
+                        envelopeCard.style.display = 'none';
+                        finalCard.style.display = 'block';
+                        setTimeout(() => { finalCard.classList.add('visible'); }, 50);
+                        setTimeout(() => {
+                            planeSvg.classList.remove('flying');
+                            planeSvg.style.opacity = '0';
+                            planeSvg.style.left = '0';
+                            planeSvg.style.top = '0';
+                            planeSvg.style.transform = 'none';
+                        }, 400);
+                        submitBtn.textContent = '📮 寄出愿望';
+                        submitBtn.style.opacity = '1';
+                        isProcessing = false;
+                        setTimeout(() => {
+                            envelope.classList.remove('folding');
+                            envelope.style.opacity = '1';
+                        }, 100);
+                    }, 4600);
+                }, 3100);
+            }, 600);
+        });
+
+        // ===== 底层粒子 =====
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+        let width = window.innerWidth;
+        let height = window.innerHeight;
+        canvas.width = width;
+        canvas.height = height;
+
+        const particles = [];
+        const COUNT = 100;
+        let gyroX = 0,
+            gyroY = 0;
+        let targetGX = 0,
+            targetGY = 0;
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.size = 2.5 + Math.random() * 4.5;
+                this.baseX = this.x;
+                this.baseY = this.y;
+                this.wanderRadius = 50 + Math.random() * 80;
+                this.wanderSpeed = 0.005 + Math.random() * 0.008;
+                this.angle = Math.random() * Math.PI * 2;
+                this.alpha = 0.4 + Math.random() * 0.6;
+                this.hue = Math.random() * 360;
+            }
+            update() {
+                const driftX = gyroX * 3.5;
+                const driftY = gyroY * 3.5;
+                this.angle += this.wanderSpeed;
+                const wanderX = Math.sin(this.angle) * this.wanderRadius * 0.015;
+                const wanderY = Math.cos(this.angle * 0.7) * this.wanderRadius * 0.015;
+                const targetX = this.baseX + wanderX + driftX * 25;
+                const targetY = this.baseY + wanderY + driftY * 25;
+                this.x += (targetX - this.x) * 0.05;
+                this.y += (targetY - this.y) * 0.05;
+                if (this.x < -50) this.x = width + 50;
+                if (this.x > width + 50) this.x = -50;
+                if (this.y < -50) this.y = height + 50;
+                if (this.y > height + 50) this.y = -50;
+            }
+            draw() {
+                const hue = this.hue + Date.now() * 0.01;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = `hsla(${hue}, 85%, 65%, ${this.alpha * 0.8})`;
+                ctx.fill();
+                const glow = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size * 2);
+                glow.addColorStop(0, `hsla(${hue}, 90%, 70%, 0.15)`);
+                glow.addColorStop(1, `hsla(${hue}, 90%, 70%, 0)`);
+                ctx.fillStyle = glow;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size * 2, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        for (let i = 0; i < COUNT; i++) {
+            particles.push(new Particle());
+        }
+
+        function drawLines() {
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 120) {
+                        const alpha = (1 - dist / 120) * 0.2;
+                        const hue = (i / particles.length) * 360 + Date.now() * 0.01;
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.strokeStyle = `hsla(${hue}, 70%, 60%, ${alpha})`;
+                        ctx.lineWidth = 1;
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            for (const p of particles) p.update();
+            drawLines();
+            for (const p of particles) p.draw();
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        window.addEventListener('resize', () => {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas.width = width;
+            canvas.height = height;
+        }, { passive: true });
+
+        // ===== 陀螺仪 =====
+        if (window.DeviceOrientationEvent) {
+            window.addEventListener('deviceorientation', (e) => {
+                const beta = e.beta || 0;
+                const gamma = e.gamma || 0;
+                targetGX = Math.max(-1, Math.min(1, gamma / 45));
+                targetGY = Math.max(-1, Math.min(1, beta / 45));
+            });
+            if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+                DeviceOrientationEvent.requestPermission().then(state => {
+                    if (state === 'granted') {
+                        window.addEventListener('deviceorientation', (e) => {
+                            const beta = e.beta || 0;
+                            const gamma = e.gamma || 0;
+                            targetGX = Math.max(-1, Math.min(1, gamma / 45));
+                            targetGY = Math.max(-1, Math.min(1, beta / 45));
+                        });
+                    }
+                }).catch(() => {});
+            }
+        }
+
+        setInterval(() => {
+            gyroX += (targetGX - gyroX) * 0.12;
+            gyroY += (targetGY - gyroY) * 0.12;
+        }, 30);
+
+        let autoDrift = 0;
+        setInterval(() => {
+            if (!window.DeviceOrientationEvent) {
+                autoDrift += 0.003;
+                targetGX = Math.sin(autoDrift) * 0.8;
+                targetGY = Math.cos(autoDrift * 0.7) * 0.6;
+            }
+        }, 50);
+
+        // ===== 爱心飘落 =====
+        const heartCanvas = document.getElementById('heartCanvas');
+        const hCtx = heartCanvas.getContext('2d');
+        let hW = window.innerWidth;
+        let hH = window.innerHeight;
+        heartCanvas.width = hW;
+        heartCanvas.height = hH;
+
+        const hearts = [];
+        const HEART_COUNT = 35;
+
+        class Heart {
+            constructor() {
+                this.reset();
+                this.y = Math.random() * hH;
+                this.size = 14 + Math.random() * 20;
+                this.opacity = 0.2 + Math.random() * 0.4;
+                this.hue = 340 + Math.random() * 30;
+            }
+            reset() {
+                this.x = Math.random() * hW;
+                this.y = -20;
+                this.size = 14 + Math.random() * 20;
+                this.speed = 0.5 + Math.random() * 1.0;
+                this.wind = (Math.random() - 0.5) * 0.5;
+                this.opacity = 0.2 + Math.random() * 0.4;
+                this.hue = 340 + Math.random() * 30;
+                this.swing = Math.random() * Math.PI * 2;
+                this.swingSpeed = 0.01 + Math.random() * 0.02;
+            }
+            update() {
+                this.y += this.speed;
+                this.swing += this.swingSpeed;
+                this.x += this.wind + Math.sin(this.swing) * 0.3;
+                if (this.y > hH + 20) {
+                    this.reset();
+                    this.y = -20;
+                }
+                if (this.x > hW + 20) this.x = -20;
+                if (this.x < -20) this.x = hW + 20;
+            }
+            draw() {
+                const s = this.size;
+                const x = this.x;
+                const y = this.y;
+                const alpha = this.opacity;
+                hCtx.save();
+                hCtx.globalAlpha = alpha;
+                hCtx.translate(x, y);
+                hCtx.beginPath();
+                hCtx.moveTo(0, s * 0.3);
+                hCtx.bezierCurveTo(-s * 0.6, -s * 0.3, -s * 0.8, s * 0.4, 0, s * 0.9);
+                hCtx.bezierCurveTo(s * 0.8, s * 0.4, s * 0.6, -s * 0.3, 0, s * 0.3);
+                hCtx.closePath();
+                hCtx.fillStyle = `hsla(${this.hue}, 85%, 65%, 1)`;
+                hCtx.fill();
+                hCtx.shadowColor = `hsla(${this.hue}, 90%, 70%, 0.5)`;
+                hCtx.shadowBlur = 15;
+                hCtx.restore();
+            }
+        }
+
+        for (let i = 0; i < HEART_COUNT; i++) {
+            hearts.push(new Heart());
+        }
+
+        function animateHearts() {
+            hCtx.clearRect(0, 0, hW, hH);
+            for (const h of hearts) {
+                h.update();
+                h.draw();
+            }
+            requestAnimationFrame(animateHearts);
+        }
+        animateHearts();
+
+        window.addEventListener('resize', () => {
+            hW = heartCanvas.width = window.innerWidth;
+            hH = heartCanvas.height = window.innerHeight;
+        }, { passive: true });
+
+        // ===== BGM =====
+        const audioEl = document.getElementById('bgm');
+        if (audioEl) {
+            let bgmStarted = false;
+            const tryPlayBGM = () => {
+                if (bgmStarted) return;
+                audioEl.play().then(() => {
+                    bgmStarted = true;
+                    document.removeEventListener('scroll', tryPlayBGM);
+                    document.removeEventListener('touchstart', tryPlayBGM);
+                    document.removeEventListener('click', tryPlayBGM);
+                }).catch(() => {});
+            };
+            document.addEventListener('scroll', tryPlayBGM, { passive: true });
+            document.addEventListener('touchstart', tryPlayBGM, { passive: true });
+            document.addEventListener('click', tryPlayBGM);
+        }
+    </script>
 </body>
 </html>
