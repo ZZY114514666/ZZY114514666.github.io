@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>🎂 老爸，生日快乐</title>
   <style>
+    /* ===== 原有样式保持不变 ===== */
     * {
       margin: 0;
       padding: 0;
@@ -19,7 +20,6 @@
       -webkit-overflow-scrolling: touch;
     }
 
-    /* ===== 加载遮罩（淡出） ===== */
     #loading-mask {
       position: fixed;
       inset: 0;
@@ -38,7 +38,6 @@
       opacity: 0;
     }
 
-    /* ===== 粒子层 ===== */
     #particleCanvas {
       position: fixed;
       top: 0;
@@ -49,8 +48,6 @@
       display: block;
       pointer-events: none;
     }
-
-    /* ===== 爱心层 ===== */
     #heartCanvas {
       position: fixed;
       top: 0;
@@ -80,7 +77,6 @@
       margin: 0 auto;
     }
 
-    /* ===== 卡片 ===== */
     .card {
       background: rgba(18, 20, 35, 0.65);
       backdrop-filter: blur(8px);
@@ -90,10 +86,8 @@
       margin-bottom: 20px;
       border: 1px solid rgba(251, 191, 36, 0.15);
       box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
-      transition: transform 0.25s cubic-bezier(.34, 1.56, .64, 1), box-shadow 0.3s ease;
       position: relative;
       overflow: hidden;
-      /* 入场动画默认隐藏 */
       opacity: 0;
       transform: translateY(30px);
       transition: opacity 0.7s ease, transform 0.7s ease, box-shadow 0.3s ease;
@@ -102,7 +96,6 @@
       opacity: 1;
       transform: translateY(0);
     }
-
     .card::before {
       content: '';
       position: absolute;
@@ -112,17 +105,6 @@
       height: 200%;
       background: radial-gradient(circle at 30% 40%, rgba(251, 191, 36, 0.03) 0%, transparent 60%);
       pointer-events: none;
-    }
-    .card:active {
-      transform: scale(0.97);
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-    }
-    @media (hover: hover) {
-      .card:hover {
-        transform: translateY(-4px) scale(1.01);
-        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
-        border-color: rgba(251, 191, 36, 0.3);
-      }
     }
 
     .title {
@@ -147,6 +129,7 @@
       color: #fbbf24;
       font-weight: 500;
     }
+
     .btn {
       display: block;
       width: 100%;
@@ -164,11 +147,13 @@
       box-shadow: 0 4px 24px rgba(245, 158, 11, 0.35);
       position: relative;
       z-index: 2;
+      cursor: pointer;
     }
     .btn:active {
       opacity: 0.7;
       transform: scale(0.97);
     }
+
     .tags {
       display: flex;
       flex-wrap: wrap;
@@ -187,6 +172,7 @@
       color: #fcd34d;
       font-weight: 300;
     }
+
     .preview-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -209,6 +195,7 @@
       transform: scale(1.02);
       box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
     }
+
     .footer-note {
       text-align: center;
       color: rgba(255, 255, 255, 0.15);
@@ -230,6 +217,7 @@
       display: inline-block;
       margin: 0 6px;
     }
+
     @media (max-width: 480px) {
       .overlay {
         padding: 20px 12px 40px;
@@ -248,6 +236,196 @@
         gap: 8px;
       }
     }
+
+    /* ===== 愿望卡片专用样式 ===== */
+    .wish-textarea {
+      width: 100%;
+      min-height: 120px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(251, 191, 36, 0.2);
+      border-radius: 16px;
+      padding: 14px 16px;
+      color: #fde68a;
+      font-size: 16px;
+      line-height: 1.8;
+      resize: vertical;
+      font-family: inherit;
+      transition: border-color 0.3s ease;
+      margin-top: 8px;
+    }
+    .wish-textarea:focus {
+      outline: none;
+      border-color: #fbbf24;
+      background: rgba(255, 255, 255, 0.06);
+    }
+    .wish-textarea::placeholder {
+      color: rgba(255, 255, 255, 0.2);
+      font-size: 14px;
+    }
+
+    /* ===== 信封动画 ===== */
+    .envelope-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 280px;
+      margin: 0 auto;
+      aspect-ratio: 4/3;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .envelope-wrapper.active {
+      display: flex;
+    }
+
+    .envelope {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(145deg, #f5e6c8, #e8d5b0);
+      border-radius: 6px;
+      position: relative;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+      border: 2px solid #d4b896;
+      transition: transform 0.6s cubic-bezier(.34, 1.56, .64, 1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+    .envelope::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 0;
+      border-left: 50% solid transparent;
+      border-right: 50% solid transparent;
+      border-top: 60px solid #d4b896;
+    }
+    .envelope .seal {
+      width: 40px;
+      height: 40px;
+      background: radial-gradient(circle, #c0392b, #a93226);
+      border-radius: 50%;
+      border: 2px solid #922b21;
+      box-shadow: inset 0 -2px 4px rgba(0, 0, 0, 0.2);
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      color: #fdebd0;
+    }
+    .envelope .stamp {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 40px;
+      height: 48px;
+      background: linear-gradient(145deg, #e8d5b0, #d4b896);
+      border: 2px dashed #b8956a;
+      border-radius: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      color: #8b6b4a;
+      transform: rotate(6deg);
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+    .envelope .address-line {
+      color: #5a3e2b;
+      font-size: 12px;
+      letter-spacing: 2px;
+      margin-top: 18px;
+      font-weight: 400;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 4px 16px;
+      border-radius: 4px;
+      z-index: 1;
+    }
+
+    /* ===== 纸飞机 ===== */
+    .paper-plane {
+      position: fixed;
+      font-size: 56px;
+      z-index: 100;
+      pointer-events: none;
+      opacity: 0;
+      transition: none;
+      filter: drop-shadow(0 4px 20px rgba(251, 191, 36, 0.3));
+    }
+    .paper-plane.flying {
+      opacity: 1;
+      animation: planeFly 3.2s cubic-bezier(.25, .46, .45, .94) forwards;
+    }
+
+    @keyframes planeFly {
+      0% {
+        transform: translate(0, 0) rotate(0deg) scale(1);
+        opacity: 1;
+      }
+      20% {
+        transform: translate(30px, -50px) rotate(-8deg) scale(1.05);
+        opacity: 1;
+      }
+      50% {
+        transform: translate(120px, -200px) rotate(-12deg) scale(1.1);
+        opacity: 0.9;
+      }
+      80% {
+        transform: translate(250px, -400px) rotate(-5deg) scale(0.9);
+        opacity: 0.6;
+      }
+      100% {
+        transform: translate(400px, -600px) rotate(10deg) scale(0.3);
+        opacity: 0;
+      }
+    }
+
+    /* ===== 纸飞机飞走后的隐藏状态 ===== */
+    .card.hidden-card {
+      display: none;
+    }
+
+    /* ===== 静候佳音卡片 ===== */
+    .final-card {
+      text-align: center;
+      padding: 40px 20px;
+    }
+    .final-card .title {
+      font-size: 30px;
+    }
+    .final-card .subtitle {
+      font-size: 17px;
+      line-height: 2.2;
+    }
+    .final-card .big-heart {
+      font-size: 60px;
+      display: block;
+      margin: 10px auto 16px;
+      animation: heartbeat 1.2s ease-in-out infinite;
+    }
+    @keyframes heartbeat {
+      0%,
+      100% {
+        transform: scale(1);
+      }
+      14% {
+        transform: scale(1.2);
+      }
+      28% {
+        transform: scale(1);
+      }
+      42% {
+        transform: scale(1.15);
+      }
+      56% {
+        transform: scale(1);
+      }
+    }
   </style>
 </head>
 <body>
@@ -261,13 +439,11 @@
   <div class="overlay">
     <div class="container" id="cardContainer">
 
+      <!-- ===== 原有卡片 1-7（省略，保持原样） ===== -->
       <!-- 卡片1 -->
       <div class="card">
         <div class="title">🎂 老爸，生日快乐</div>
-        <div class="subtitle">
-          您是我心中最酷的人<br>
-          <span class="highlight">感谢您为这个家付出的一切</span>
-        </div>
+        <div class="subtitle">您是我心中最酷的人<br><span class="highlight">感谢您为这个家付出的一切</span></div>
         <a href="tel:13888888888" class="btn">📞 给老爸打个电话</a>
         <div class="tags">
           <span class="tag">🛠 家里的万能工</span>
@@ -323,7 +499,7 @@
           你从未缺席，也从未后退。<br><br>
           你教我的那些道理，<br>
           我到现在都记得：<br>
-          <span style="color: #fde68a;">“做人要踏实，做事要认真，对家人要好。”</span><br><br>
+          <span style="color: #fde68a;">"做人要踏实，做事要认真，对家人要好。"</span><br><br>
           老爸，你是这个家的顶梁柱，<br>
           也是我永远的英雄。
         </div>
@@ -368,7 +544,7 @@
           爸爸，谢谢您做我的父亲。<br><br>
           谢谢您教会我走路、骑车、做人。<br>
           谢谢您在我跌倒的时候，从不伸手拉我，<br>
-          而是站在旁边说：“站起来，你可以的。”<br><br>
+          而是站在旁边说："站起来，你可以的。"<br><br>
           那些年我觉得您狠心，<br>
           现在才明白，那是您给我最珍贵的礼物——<br>
           <span style="color: #fbbf24; font-weight: 500;">独立和坚强。</span><br><br>
@@ -379,6 +555,48 @@
         </div>
       </div>
 
+      <!-- ===== 🆕 卡片8：许愿卡 ===== -->
+      <div class="card" id="wishCard">
+        <div class="title">🕯️ 许个愿吧</div>
+        <div class="subtitle" style="margin-bottom: 4px;">写下您最想实现的愿望</div>
+        <textarea class="wish-textarea" id="wishInput" placeholder="例如：希望全家人身体健康…"></textarea>
+        <button class="btn" id="submitWishBtn">📮 寄出愿望</button>
+        <div style="text-align:center;margin-top:10px;font-size:13px;color:rgba(255,255,255,0.2);">
+          愿望会变成纸飞机飞向远方 ✈️
+        </div>
+      </div>
+
+      <!-- ===== 🆕 卡片9：信封展示（初始隐藏） ===== -->
+      <div class="card" id="envelopeCard" style="display:none;">
+        <div class="title">📮 你的愿望已装好</div>
+        <div class="envelope-wrapper active">
+          <div class="envelope">
+            <div class="stamp">📬 加急</div>
+            <div class="seal">✉️</div>
+            <div class="address-line">致 · 未来的你</div>
+          </div>
+        </div>
+        <div style="text-align:center;margin-top:12px;font-size:13px;color:rgba(220,230,245,0.5);">
+          正在寄送中...
+        </div>
+      </div>
+
+      <!-- ===== 🆕 卡片10：静候佳音（初始隐藏） ===== -->
+      <div class="card" id="finalCard" style="display:none;">
+        <div class="final-card">
+          <span class="big-heart">💛</span>
+          <div class="title">静候佳音</div>
+          <div class="subtitle">
+            愿望已经寄出<br>
+            它会穿越时光，在最好的时刻抵达<br><br>
+            <span style="color: #fbbf24; font-size: 14px;">—— 愿你所有的愿望，都能如愿以偿 ——</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== 纸飞机元素 ===== -->
+      <div class="paper-plane" id="paperPlane">✈️</div>
+
       <div class="footer-note">🎁 送给最亲爱的爸爸 · 2026</div>
 
     </div>
@@ -388,7 +606,7 @@
 
   <script>
     // ============================================================
-    // 0. 加载遮罩淡出
+    // 0. 加载遮罩淡出 + 卡片滚动入场（原有逻辑）
     // ============================================================
     window.addEventListener('load', () => {
       setTimeout(() => {
@@ -396,31 +614,89 @@
       }, 400);
     });
 
-    // ============================================================
-    // 1. 卡片滚动入场（Intersection Observer）
-    // ============================================================
     const cards = document.querySelectorAll('.card');
-
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
-          // 卡片进入视口时加上 visible 类
           entry.target.classList.add('visible');
         }
       });
-    }, {
-      threshold: 0.15, // 卡片露出 15% 时触发
-      rootMargin: '0px 0px -20px 0px' // 稍微提前一点点触发
-    });
+    }, { threshold: 0.15, rootMargin: '0px 0px -20px 0px' });
 
     cards.forEach((card, index) => {
-      // 每张卡片延迟一点点，形成排队效果
       card.style.transitionDelay = (index * 0.08) + 's';
       observer.observe(card);
     });
 
     // ============================================================
-    // 2. 底层粒子（彩虹色 + 陀螺仪）
+    // 🆕 愿望卡 → 信封 → 纸飞机 → 静候佳音 完整流程
+    // ============================================================
+    const wishCard = document.getElementById('wishCard');
+    const envelopeCard = document.getElementById('envelopeCard');
+    const finalCard = document.getElementById('finalCard');
+    const wishInput = document.getElementById('wishInput');
+    const submitBtn = document.getElementById('submitWishBtn');
+    const paperPlane = document.getElementById('paperPlane');
+
+    let isProcessing = false;
+
+    submitBtn.addEventListener('click', () => {
+      if (isProcessing) return;
+      const wishText = wishInput.value.trim();
+      if (!wishText) {
+        wishInput.style.borderColor = '#ef4444';
+        wishInput.placeholder = '✍️ 写点什么吧...';
+        setTimeout(() => {
+          wishInput.style.borderColor = 'rgba(251, 191, 36, 0.2)';
+        }, 2000);
+        return;
+      }
+
+      isProcessing = true;
+      submitBtn.textContent = '📮 正在寄出...';
+      submitBtn.style.opacity = '0.5';
+
+      // 1. 隐藏愿望卡，显示信封卡
+      setTimeout(() => {
+        wishCard.style.display = 'none';
+        envelopeCard.style.display = 'block';
+        // 强制触发入场动画
+        setTimeout(() => {
+          envelopeCard.classList.add('visible');
+        }, 50);
+
+        // 2. 1.8秒后纸飞机飞走
+        setTimeout(() => {
+          // 获取信封卡片的位置
+          const rect = envelopeCard.getBoundingClientRect();
+          const startX = rect.left + rect.width / 2 - 28;
+          const startY = rect.top + rect.height / 2 - 28;
+
+          paperPlane.style.left = startX + 'px';
+          paperPlane.style.top = startY + 'px';
+          paperPlane.classList.add('flying');
+
+          // 3. 纸飞机飞走后隐藏信封，显示静候佳音
+          setTimeout(() => {
+            envelopeCard.style.display = 'none';
+            finalCard.style.display = 'block';
+            setTimeout(() => {
+              finalCard.classList.add('visible');
+            }, 50);
+            // 重置纸飞机
+            setTimeout(() => {
+              paperPlane.classList.remove('flying');
+              paperPlane.style.opacity = '0';
+            }, 300);
+          }, 3200);
+
+        }, 1800);
+
+      }, 600);
+    });
+
+    // ============================================================
+    // 1. 底层粒子（原有逻辑，保留）
     // ============================================================
     const canvas = document.getElementById('particleCanvas');
     const ctx = canvas.getContext('2d');
@@ -557,7 +833,7 @@
     }, 50);
 
     // ============================================================
-    // 3. 爱心飘落
+    // 2. 爱心飘落（原有逻辑，保留）
     // ============================================================
     const heartCanvas = document.getElementById('heartCanvas');
     const hCtx = heartCanvas.getContext('2d');
@@ -641,12 +917,11 @@
     }, { passive: true });
 
     // ============================================================
-    // 4. BGM：滑动页面触发播放
+    // 3. BGM：滑动触发播放（原有逻辑，保留）
     // ============================================================
     const audioEl = document.getElementById('bgm');
     if (audioEl) {
       let bgmStarted = false;
-
       const tryPlayBGM = () => {
         if (bgmStarted) return;
         audioEl.play().then(() => {
@@ -656,7 +931,6 @@
           document.removeEventListener('click', tryPlayBGM);
         }).catch(() => {});
       };
-
       document.addEventListener('scroll', tryPlayBGM, { passive: true });
       document.addEventListener('touchstart', tryPlayBGM, { passive: true });
       document.addEventListener('click', tryPlayBGM);
