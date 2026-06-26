@@ -18,6 +18,8 @@
       background: #0b0b14;
       -webkit-overflow-scrolling: touch;
     }
+
+    /* 底层粒子 */
     #particleCanvas {
       position: fixed;
       top: 0;
@@ -28,6 +30,19 @@
       display: block;
       pointer-events: none;
     }
+
+    /* 爱心画布 - 置于最上层但不遮挡点击 */
+    #heartCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 2;
+      display: block;
+      pointer-events: none;
+    }
+
     .overlay {
       position: relative;
       z-index: 1;
@@ -206,12 +221,15 @@
 </head>
 <body>
 
+  <!-- 底层粒子 -->
   <canvas id="particleCanvas"></canvas>
+  <!-- 爱心画布 -->
+  <canvas id="heartCanvas"></canvas>
 
   <div class="overlay">
     <div class="container">
 
-      <!-- ===== 卡片1：主标题 + 生日大祝福 ===== -->
+      <!-- ===== 卡片1：主标题 ===== -->
       <div class="card">
         <div class="title">🎂 老爸，生日快乐</div>
         <div class="subtitle">
@@ -232,7 +250,7 @@
         </div>
       </div>
 
-      <!-- ===== 卡片2：给爸爸的一封信（长信） ===== -->
+      <!-- ===== 卡片2：家书 ===== -->
       <div class="card">
         <div class="title">❤️ 给爸爸的一封信</div>
         <div class="subtitle" style="text-align: left; padding: 0 4px; line-height: 2.2; font-size: 15px;">
@@ -296,7 +314,7 @@
         </div>
       </div>
 
-      <!-- ===== 卡片6：生日祝福墙（新增） ===== -->
+      <!-- ===== 卡片6：祝福墙 ===== -->
       <div class="card">
         <div class="title">🎁 生日祝福墙</div>
         <div class="subtitle" style="line-height: 2.4; font-size: 15px;">
@@ -338,7 +356,7 @@
 
   <script>
     // ============================================================
-    // 底层粒子（彩虹色 + 陀螺仪）
+    // 1. 底层粒子（彩虹色 + 陀螺仪）
     // ============================================================
     const canvas = document.getElementById('particleCanvas');
     const ctx = canvas.getContext('2d');
@@ -474,17 +492,112 @@
       }
     }, 50);
 
-    // ===== BGM =====
+    // ============================================================
+    // 2. 爱心飘落（独立画布，不阻塞）
+    // ============================================================
+    const heartCanvas = document.getElementById('heartCanvas');
+    const hCtx = heartCanvas.getContext('2d');
+    let hW = window.innerWidth;
+    let hH = window.innerHeight;
+    heartCanvas.width = hW;
+    heartCanvas.height = hH;
+
+    const hearts = [];
+    const HEART_COUNT = 35;
+
+    class Heart {
+      constructor() {
+        this.reset();
+        this.y = Math.random() * hH;
+        this.size = 14 + Math.random() * 20;
+        this.opacity = 0.2 + Math.random() * 0.4;
+        this.hue = 340 + Math.random() * 30;
+      }
+      reset() {
+        this.x = Math.random() * hW;
+        this.y = -20;
+        this.size = 14 + Math.random() * 20;
+        this.speed = 0.5 + Math.random() * 1.0;
+        this.wind = (Math.random() - 0.5) * 0.5;
+        this.opacity = 0.2 + Math.random() * 0.4;
+        this.hue = 340 + Math.random() * 30;
+        this.swing = Math.random() * Math.PI * 2;
+        this.swingSpeed = 0.01 + Math.random() * 0.02;
+      }
+      update() {
+        this.y += this.speed;
+        this.swing += this.swingSpeed;
+        this.x += this.wind + Math.sin(this.swing) * 0.3;
+        if (this.y > hH + 20) {
+          this.reset();
+          this.y = -20;
+        }
+        if (this.x > hW + 20) this.x = -20;
+        if (this.x < -20) this.x = hW + 20;
+      }
+      draw() {
+        const s = this.size;
+        const x = this.x;
+        const y = this.y;
+        const alpha = this.opacity;
+
+        hCtx.save();
+        hCtx.globalAlpha = alpha;
+        hCtx.translate(x, y);
+        hCtx.beginPath();
+        hCtx.moveTo(0, s * 0.3);
+        hCtx.bezierCurveTo(-s * 0.6, -s * 0.3, -s * 0.8, s * 0.4, 0, s * 0.9);
+        hCtx.bezierCurveTo(s * 0.8, s * 0.4, s * 0.6, -s * 0.3, 0, s * 0.3);
+        hCtx.closePath();
+        hCtx.fillStyle = `hsla(${this.hue}, 85%, 65%, 1)`;
+        hCtx.fill();
+        hCtx.shadowColor = `hsla(${this.hue}, 90%, 70%, 0.5)`;
+        hCtx.shadowBlur = 15;
+        hCtx.restore();
+      }
+    }
+
+    for (let i = 0; i < HEART_COUNT; i++) {
+      hearts.push(new Heart());
+    }
+
+    function animateHearts() {
+      hCtx.clearRect(0, 0, hW, hH);
+      for (const h of hearts) {
+        h.update();
+        h.draw();
+      }
+      requestAnimationFrame(animateHearts);
+    }
+    animateHearts();
+
+    window.addEventListener('resize', () => {
+      hW = heartCanvas.width = window.innerWidth;
+      hH = heartCanvas.height = window.innerHeight;
+    }, { passive: true });
+
+    // ============================================================
+    // 3. BGM：滑动页面触发播放（只播一次）
+    // ============================================================
     const audioEl = document.getElementById('bgm');
     if (audioEl) {
-      const playBGM = () => {
+      let bgmStarted = false;
+
+      const tryPlayBGM = () => {
+        if (bgmStarted) return;
         audioEl.play().then(() => {
-          document.removeEventListener('click', playBGM);
-          document.removeEventListener('touchstart', playBGM);
+          bgmStarted = true;
+          document.removeEventListener('scroll', tryPlayBGM);
+          document.removeEventListener('touchstart', tryPlayBGM);
+          document.removeEventListener('click', tryPlayBGM);
         }).catch(() => {});
       };
-      document.addEventListener('click', playBGM);
-      document.addEventListener('touchstart', playBGM);
+
+      // 滑动触发（手机滑动时触发 scroll 事件）
+      document.addEventListener('scroll', tryPlayBGM, { passive: true });
+      // 如果滑动没触发，点击/触摸也能兜底
+      document.addEventListener('touchstart', tryPlayBGM, { passive: true });
+      document.addEventListener('click', tryPlayBGM);
     }
   </script>
 </body>
