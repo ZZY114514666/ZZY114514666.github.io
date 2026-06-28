@@ -350,7 +350,7 @@
             transform: rotateX(-180deg);
         }
         .envelope.folding .envelope-body {
-            transform: scale(0.9) rotateY(8deg) skewX(-2deg);
+            transform: scale(0.85) rotateY(6deg) skewX(-2deg);
             border-radius: 2px 12px 12px 2px;
         }
         .envelope.folding .seal {
@@ -377,7 +377,7 @@
             position: absolute;
             border-radius: 50%;
             box-shadow: 0 0 12px rgba(251, 191, 36, 0.6);
-            animation: burstOut 1.2s cubic-bezier(.25, .46, .45, .94) forwards;
+            animation: burstOut 1.4s cubic-bezier(.25, .46, .45, .94) forwards;
             opacity: 0;
         }
         @keyframes burstOut {
@@ -519,7 +519,7 @@
     <div class="overlay">
         <div class="container" id="cardContainer">
 
-            <!-- ===== 卡片1-7（你的原有内容） ===== -->
+            <!-- ===== 卡片1 ===== -->
             <div class="card">
                 <div class="title">🎂 老爸，生日快乐</div>
                 <div class="subtitle">您是我心中最酷的人<br><span class="highlight">感谢您为这个家付出的一切</span></div>
@@ -537,6 +537,7 @@
                 </div>
             </div>
 
+            <!-- ===== 卡片2 ===== -->
             <div class="card">
                 <div class="title">❤️ 给爸爸的一封信</div>
                 <div class="subtitle" style="text-align: left; padding: 0 4px; line-height: 2.2; font-size: 15px;">
@@ -555,6 +556,7 @@
                 </div>
             </div>
 
+            <!-- ===== 卡片3 ===== -->
             <div class="card">
                 <div class="title">📸 我们的全家福</div>
                 <div class="subtitle" style="margin-bottom: 8px; font-size: 13px;">每一张照片，都是我们最珍贵的时光</div>
@@ -566,6 +568,7 @@
                 </div>
             </div>
 
+            <!-- ===== 卡片4 ===== -->
             <div class="card">
                 <div class="title">🏠 我们的家</div>
                 <div class="subtitle" style="text-align: left; padding: 0 4px; line-height: 2.2; font-size: 15px;">
@@ -581,6 +584,7 @@
                 </div>
             </div>
 
+            <!-- ===== 卡片5 ===== -->
             <div class="card">
                 <div class="title">🌟 我眼中的您</div>
                 <div class="tags" style="margin-top: 6px;">
@@ -597,6 +601,7 @@
                 </div>
             </div>
 
+            <!-- ===== 卡片6 ===== -->
             <div class="card">
                 <div class="title">🎁 生日祝福墙</div>
                 <div class="subtitle" style="line-height: 2.4; font-size: 15px;">
@@ -611,6 +616,7 @@
                 </div>
             </div>
 
+            <!-- ===== 卡片7 ===== -->
             <div class="card">
                 <div class="title">🌅 最后想说的话</div>
                 <div class="subtitle" style="text-align: left; padding: 0 4px; line-height: 2.2; font-size: 15px;">
@@ -638,7 +644,7 @@
                 </div>
             </div>
 
-            <!-- ===== 🆕 卡片9：信封 → 粒子消散 → 纸飞机 ===== -->
+            <!-- ===== 🆕 卡片9：信封 → 折叠 → 本身变成粒子 ===== -->
             <div class="card" id="envelopeCard" style="display:none;">
                 <div class="title">📮 你的愿望已装好</div>
                 <div class="envelope-wrapper active" id="envelopeWrapper">
@@ -698,7 +704,7 @@
             observer.observe(card);
         });
 
-        // ===== 愿望 → 信封 → 粒子消散 → 纸飞机 =====
+        // ===== 愿望 → 信封 → 折叠 → 本身变成粒子 → 纸飞机 =====
         const wishCard = document.getElementById('wishCard');
         const envelopeCard = document.getElementById('envelopeCard');
         const finalCard = document.getElementById('finalCard');
@@ -711,49 +717,84 @@
         const planeSvg = planeContainer.querySelector('svg');
 
         let isProcessing = false;
+        let savedWish = '';
 
         function getEnvelopeCenter() {
-            const rect = envelopeCard.getBoundingClientRect();
+            const wrapper = document.getElementById('envelopeWrapper');
+            const rect = wrapper.getBoundingClientRect();
             return {
                 x: rect.left + rect.width / 2 - 40,
                 y: rect.top + rect.height / 2 - 40
             };
         }
 
+        // ===== 信封本身变成粒子 =====
         function triggerParticleBurst() {
-            const rect = envelope.getBoundingClientRect();
-            const cx = rect.width / 2;
-            const cy = rect.height / 2;
+            const envelopeEl = document.getElementById('envelope');
+            const rect = envelopeEl.getBoundingClientRect();
+            const cardRect = envelopeCard.getBoundingClientRect();
+
+            const left = rect.left - cardRect.left;
+            const top = rect.top - cardRect.top;
+            const width = rect.width;
+            const height = rect.height;
+
             particleBurst.innerHTML = '';
-            const count = 60;
-            const colors = ['#fbbf24', '#f59e0b', '#f97316', '#fcd34d', '#fde68a'];
+
+            const count = 150;
+            const colors = ['#fbbf24', '#f59e0b', '#f97316', '#fcd34d', '#fde68a', '#f5e6c8', '#e8d5b0'];
+
             for (let i = 0; i < count; i++) {
                 const p = document.createElement('div');
                 p.className = 'p';
+
+                const px = left + Math.random() * width;
+                const py = top + Math.random() * height;
+
                 const angle = Math.random() * Math.PI * 2;
-                const radius = 80 + Math.random() * 160;
+                const radius = 40 + Math.random() * 220;
                 const tx = Math.cos(angle) * radius;
-                const ty = Math.sin(angle) * radius - 40;
-                const size = 4 + Math.random() * 10;
+                const ty = Math.sin(angle) * radius - 30;
+                const size = 3 + Math.random() * 15;
                 const color1 = colors[Math.floor(Math.random() * colors.length)];
-                const color2 = ['#d97706', '#b45309', '#f59e0b'][Math.floor(Math.random() * 3)];
-                p.style.cssText =
-                    `left:${cx}px;top:${cy}px;width:${size}px;height:${size}px;--tx:${tx}px;--ty:${ty}px;animation-delay:${Math.random()*0.15}s;background:radial-gradient(circle,${color1},${color2});`;
+                const color2 = ['#d97706', '#b45309', '#f59e0b', '#8b6b4a'][Math.floor(Math.random() * 4)];
+                const delay = Math.random() * 0.4;
+
+                p.style.cssText = `
+                    left: ${px}px;
+                    top: ${py}px;
+                    width: ${size}px;
+                    height: ${size}px;
+                    --tx: ${tx}px;
+                    --ty: ${ty}px;
+                    animation-delay: ${delay}s;
+                    background: radial-gradient(circle, ${color1}, ${color2});
+                    box-shadow: 0 0 20px rgba(251, 191, 36, ${0.2 + Math.random() * 0.4});
+                    border-radius: ${Math.random() > 0.5 ? '50%' : '2px'};
+                `;
                 particleBurst.appendChild(p);
             }
-            setTimeout(() => { particleBurst.innerHTML = ''; }, 1600);
+
+            envelope.style.transition = 'opacity 0.4s ease';
+            envelope.style.opacity = '0';
+
+            setTimeout(() => {
+                if (particleBurst) particleBurst.innerHTML = '';
+                envelope.style.transition = '';
+            }, 2200);
         }
 
         const statusSteps = [
             { text: '📮 正在封装你的愿望...', delay: 0 },
-            { text: '✉️ 盖上火漆印章...', delay: 600 },
-            { text: '📬 贴好邮票...', delay: 1200 },
-            { text: '🔄 信封正在折叠...', delay: 1800 },
-            { text: '✨ 化作星光飞向远方...', delay: 2600 },
+            { text: '✉️ 盖上火漆印章...', delay: 700 },
+            { text: '📬 贴好邮票...', delay: 1400 },
+            { text: '🔄 信封正在折叠...', delay: 2100 },
+            { text: '✨ 折叠完成，化作星光...', delay: 2800 },
         ];
 
         submitBtn.addEventListener('click', () => {
             if (isProcessing) return;
+
             const wishText = wishInput.value.trim();
             if (!wishText) {
                 wishInput.style.borderColor = '#ef4444';
@@ -763,6 +804,8 @@
                 }, 2000);
                 return;
             }
+
+            savedWish = wishText;
             isProcessing = true;
             submitBtn.textContent = '📮 正在寄出...';
             submitBtn.style.opacity = '0.5';
@@ -770,27 +813,53 @@
             setTimeout(() => {
                 wishCard.style.display = 'none';
                 envelopeCard.style.display = 'block';
-                setTimeout(() => { envelopeCard.classList.add('visible'); }, 50);
+                envelope.classList.remove('folding');
+                envelope.style.opacity = '1';
+                envelope.style.transition = '';
+                particleBurst.innerHTML = '';
+
+                setTimeout(() => {
+                    envelopeCard.classList.add('visible');
+                }, 50);
+
                 statusSteps.forEach((step) => {
-                    setTimeout(() => { envelopeStatus.textContent = step.text; }, step.delay);
+                    setTimeout(() => {
+                        envelopeStatus.textContent = step.text;
+                    }, step.delay);
                 });
-                setTimeout(() => { envelope.classList.add('folding'); }, 1800);
+
+                // ===== 第一步：折叠信封 =====
+                setTimeout(() => {
+                    envelope.classList.add('folding');
+                }, 2100);
+
+                // ===== 第二步：折叠完成后，信封本身变成粒子 =====
                 setTimeout(() => {
                     triggerParticleBurst();
-                    setTimeout(() => { envelope.style.opacity = '0'; }, 200);
-                }, 2700);
+                }, 3100);
+
+                // ===== 第三步：纸飞机起飞 =====
                 setTimeout(() => {
                     envelopeStatus.textContent = '✈️ 飞向远方...';
+
                     const pos = getEnvelopeCenter();
                     planeSvg.style.left = pos.x + 'px';
                     planeSvg.style.top = pos.y + 'px';
                     planeSvg.style.opacity = '1';
                     planeSvg.style.transform = 'rotate(0deg) scale(1)';
-                    requestAnimationFrame(() => { planeSvg.classList.add('flying'); });
+
+                    requestAnimationFrame(() => {
+                        planeSvg.classList.add('flying');
+                    });
+
+                    // ===== 第四步：静候佳音 =====
                     setTimeout(() => {
                         envelopeCard.style.display = 'none';
                         finalCard.style.display = 'block';
-                        setTimeout(() => { finalCard.classList.add('visible'); }, 50);
+                        setTimeout(() => {
+                            finalCard.classList.add('visible');
+                        }, 50);
+
                         setTimeout(() => {
                             planeSvg.classList.remove('flying');
                             planeSvg.style.opacity = '0';
@@ -798,15 +867,22 @@
                             planeSvg.style.top = '0';
                             planeSvg.style.transform = 'none';
                         }, 400);
+
                         submitBtn.textContent = '📮 寄出愿望';
                         submitBtn.style.opacity = '1';
                         isProcessing = false;
+
                         setTimeout(() => {
                             envelope.classList.remove('folding');
                             envelope.style.opacity = '1';
-                        }, 100);
-                    }, 4600);
-                }, 3100);
+                            envelope.style.transition = '';
+                            particleBurst.innerHTML = '';
+                        }, 200);
+
+                    }, 4500);
+
+                }, 3800);
+
             }, 600);
         });
 
